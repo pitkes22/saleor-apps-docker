@@ -28,4 +28,5 @@ jobs:
           upstream_sync_repo: saleor/apps
           test_mode: ${{ inputs.sync_test_mode }}
           upstream_pull_args: '--tags'
+          target_branch_push_args: '--tags'
 
