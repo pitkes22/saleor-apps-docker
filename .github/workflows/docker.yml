@@ -42,5 +42,5 @@ jobs:
         with:
           context: .
           file: ./apps/${{ env.PACKAGE_NAME }}/Dockerfile
-          tags: ${{ secrets.DOCKER_USERNAME }}/${{ env.PACKAGE_NAME }}:${{ env.VERSION }}
+          tags: ghcr.io/${{ github.repository_owner }}/${{ env.PACKAGE_NAME }}:${{ env.VERSION }}
           push: true
