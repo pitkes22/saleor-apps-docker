@@ -18,12 +18,14 @@ jobs:
     steps:
       - name: Checkout target repo
         uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.PAT_TOKEN }}
       - name: Sync upstream changes
         id: sync
         uses: aormsby/Fork-Sync-With-Upstream-action@v3.4.1
         with:
           target_sync_branch: main
-          target_repo_token: ${{ secrets.GITHUB_TOKEN }}
+          target_repo_token: ${{ secrets.PAT_TOKEN }}
           upstream_sync_branch: main
           upstream_sync_repo: saleor/apps
           test_mode: ${{ inputs.sync_test_mode }}
