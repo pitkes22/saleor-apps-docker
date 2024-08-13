@@ -1,73 +1,41 @@
-![Saleor Apps](https://user-images.githubusercontent.com/44495184/208925145-78c5022c-1a6c-4f2c-8f4f-7500e7afcaf0.png)
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/f46673a1-e664-414d-af2a-bed328d6b394" />
+</p>
 
 <div align="center">
-  <h1>Saleor Apps</h1>
+  <h1>Saleor Apps Docker</h1>
 </div>
 
 <div align="center">
-  <p>The central space for Saleor Apps, Integrations and Marketplace.
+  <p>Unofficial fork of the <b>@saleor/apps</b> repository that adds support for self-hosting apps using docker.</p>
 </div>
 
-<div align="center">
-  <a href="https://saleor.io/">🏠 Website</a>
-  <span> • </span>
-  <a href="https://docs.saleor.io/docs/3.x">📚 Docs</a>
-  <span> • </span>
-  <a href="https://saleor.io/blog/">📰 Blog</a>
-  <span> • </span>
-  <a href="https://twitter.com/getsaleor">🐦 Twitter</a>
-  <span> • </span>
-  <a href="https://discord.gg/H52JTZAtSH">💬 Discord</a>
-</div>
+## Status
 
-<div align="center">
-  <a href="https://docs.saleor.io/docs/3.x/developer/extending/apps/quickstart/getting-started">🆕 Apps Quickstart</a>
-  <span> • </span>
-  <a href="https://github.com/saleor/apps/discussions/categories/integrations-features">✍️ Propose an app</a>
-</div>
+Some of the apps might be dockerized but not yet tested, if you use them and they work, feel free to mark them as tested in PR.
 
-<br/>
-<div align="center">
-  
-[![Discord Badge](https://dcbadge.vercel.app/api/server/H52JTZAtSH)](https://discord.gg/H52JTZAtSH)
+| App                                                | Dockerized | Tested          |
+|----------------------------------------------------|------------|-----------------|
+| [avatax](./apps/avatax)                            | ❌          | ❌               | 
+| [cms](./apps/cms-v2)                               | ❌          | ❌               | 
+| [data-importer](./apps/data-importer)              | ❌          | ❌               | 
+| [emails-and-messages](./apps/emails-and-messages/) | ❌          | ❌               | 
+| [klaviyo](./apps/klaviyo)                          | ❌          | ❌               | 
+| [products-feed](./apps/products-feed)              | ❌          | ❌               | 
+| [search](./apps/search)                            | ✅          | ⚠️ Being tested | 
+| [smtp](./apps/smtp)                                | ❌          | ❌               | 
 
-</div>
+## Docker Images
 
-## Overview
+Docker images are built automatically at midnight each day. This repository should always be less than 24 hours behind [@saleor/apps](https://github.com/saleor/apps) repository.
+Packages are published to the GitHub container registry and available in this repository in the [packages section](https://github.com/pitkes22?tab=packages&repo_name=saleor-apps-docker).
 
-This repository serves as a starting point in the exploration of Saleor apps.
+Example:
+```shell
+docker pull ghcr.io/pitkes22/search:1.22.6
+```
 
-> _Saleor apps are separate applications that use GraphQL to talk to the Saleor server and receive webhooks with event notifications from Saleor._
->
-> [docs.saleor.io](https://docs.saleor.io/docs/3.x/developer/extending/apps/key-concepts)
+## Configuration
 
-### Apps list
-
-In the `apps` folder, you will find the following applications:
-
-- [avatax](./apps/avatax) - calculates dynamic taxes via AvaTax API
-- [cms](./apps/cms-v2) - exports products from Saleor to CMS.
-- [data-importer](./apps/data-importer) - import data from CSV to Saleor.
-- [klaviyo](./apps/klaviyo) - send Saleor events to Klaviyo, where you can notify the customers.
-- [products-feed](./apps/products-feed) - generate products feed XML
-- [search](./apps/search) - connect Saleor with search engines.
-- [smtp](./apps/smtp) - email communication with customers
-
-#### Other official apps
-
-Some of the Saleor apps are available in separate repositories:
-
-- [Stripe](https://github.com/saleor/saleor-app-payment-stripe)
-
-#### Example apps
-
-- [Slack integration app example](https://github.com/saleor/example-slack-app)
-- [Taxjar integration app example](https://github.com/saleor/example-app-taxjar)
-- [Invoices app example](https://github.com/saleor/example-app-invoices)
-- [CRM app example](https://github.com/saleor/example-app-crm)
-- [Segment app example](https://github.com/saleor/example-app-segment)
-- [Sendgrid integration app example](https://github.com/saleor/example-app-sendgrid)
-
-## Development
-
-You can find the documentation for saleor/apps on [docs.saleor.io](https://docs.saleor.io/docs/3.x/developer/app-store/development).
+Each of the application's Dockerfile exposes its configuration using environment variables. Most of the apps share the common configuration like `APL`, `APP_DEBUG`, `NODE_ENV`, `SECRET_KEY`, `ALLOWED_DOMAIN_PATTERN`, `REST_APL_ENDPOINT`, `REST_APL_TOKEN`, `NEXT_PUBLIC_VERCEL_ENV`, `APP_IFRAME_BASE_URL`, `APP_API_BASE_URL`, `VERCEL_URL`, `PORT`, `SENTRY_AUTH_TOKEN`, `SENTRY_PROJECT`, `SENTRY_ORG`, `NEXT_PUBLIC_SENTRY_DSN`, `UPSTASH_URL`, `UPSTASH_TOKEN`. Some of the apps have additional environment variables 
+that can be used to configure them. Check the app's README file to find available configuration options.
