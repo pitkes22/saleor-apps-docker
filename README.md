@@ -17,13 +17,13 @@ Some of the apps might be dockerized but not yet tested, if you use them and the
 | App                                                | Dockerized | Tested          |
 |----------------------------------------------------|------------|-----------------|
 | [avatax](./apps/avatax)                            | ❌          | ❌               | 
-| [cms](./apps/cms-v2)                               | ❌          | ❌               | 
+| [cms](./apps/cms-v2)                               | ✅          | ❌               | 
 | [data-importer](./apps/data-importer)              | ❌          | ❌               | 
 | [emails-and-messages](./apps/emails-and-messages/) | ❌          | ❌               | 
 | [klaviyo](./apps/klaviyo)                          | ❌          | ❌               | 
 | [products-feed](./apps/products-feed)              | ✅          | ❌               | 
 | [search](./apps/search)                            | ✅          | ⚠️ Being tested | 
-| [smtp](./apps/smtp)                                | ❌          | ❌               | 
+| [smtp](./apps/smtp)                                | ✅          | ❌               | 
 
 ## Docker Images
 
