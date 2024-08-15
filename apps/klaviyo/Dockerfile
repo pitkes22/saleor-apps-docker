@@ -41,8 +41,6 @@ COPY --from=builder /app/out/full/ .
 # There needs to be a second pnpm install to fix symlinks to the next binary
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install
 
-# Makes check in the next.config.js happy during build time
-ENV APL="placeholder"
 RUN turbo run build --filter=klaviyo
 
 # Use alpine as the thinnest image
