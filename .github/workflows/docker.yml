@@ -32,8 +32,15 @@ jobs:
           TAG=${GITHUB_REF#refs/tags/}
           PACKAGE_NAME=${TAG%@*}
           VERSION=${TAG#*@}
+
+          # Check if PACKAGE_NAME is 'app-avatax' and rename it to 'avatax'
+          if [ "$PACKAGE_NAME" = "app-avatax" ]; then
+            PACKAGE_NAME="avatax"
+          fi
+
           echo "PACKAGE_NAME=${PACKAGE_NAME}" >> $GITHUB_ENV
           echo "VERSION=${VERSION}" >> $GITHUB_ENV
+
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
