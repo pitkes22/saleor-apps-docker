@@ -30,6 +30,31 @@
         "DYNAMODB_LOGS_ITEM_TTL_IN_DAYS"
       ]
     },
+    "build": {
+      "env": [
+        "ALLOWED_DOMAIN_PATTERN",
+        "APL",
+        "APP_API_BASE_URL",
+        "APP_DEBUG",
+        "APP_IFRAME_BASE_URL",
+        "NODE_ENV",
+        "PORT",
+        "REST_APL_ENDPOINT",
+        "REST_APL_TOKEN",
+        "SECRET_KEY",
+        "OTEL_ENABLED",
+        "OTEL_SERVICE_NAME",
+        "APP_LOG_LEVEL",
+        "AVATAX_CLIENT_TIMEOUT",
+        "ANALYZE_BUNDLE",
+        "ENABLE_MIGRATION_CONSOLE_LOGGER",
+        "SENTRY_ORG",
+        "SENTRY_PROJECT",
+        "SENTRY_AUTH_TOKEN",
+        "NEXT_PUBLIC_SENTRY_DSN",
+        "FILE_APL_PATH"
+      ]
+    },
     "test": {
       "env": ["TEST_SALEOR_API_URL", "E2E_USER_NAME", "E2E_USER_PASSWORD"]
     }
