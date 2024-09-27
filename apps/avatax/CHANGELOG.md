@@ -1,5 +1,17 @@
 # app-avatax
 
+## 1.10.2
+
+### Patch Changes
+
+- 6d30555d: Wrapped all webhooks with metadata cache. It will cache metadata coming from the subscription and all further metadata calls from the webhook will be cached during the request
+
+## 1.10.1
+
+### Patch Changes
+
+- 7a2384b3: Added serverComponentsExternalPackages to Next.js config in order to fix functions timeouts. Packages added are from `@aws/sdk-*`
+
 ## 1.10.0
 
 ### Minor Changes
