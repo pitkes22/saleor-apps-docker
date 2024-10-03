@@ -4,22 +4,27 @@ import { describe, it } from "vitest";
 
 import {
   CreateDraftOrder,
-  CreateOrderLines,
   DraftOrderComplete,
-  DraftOrderUpdateAddress,
   DraftOrderUpdateShippingMethod,
   StaffUserTokenCreate,
+  UpdateMetadata,
 } from "../generated/graphql";
 import { getCompleteMoney } from "../utils/moneyUtils";
 
-// Testmo: https://saleor.testmo.net/repositories/6?group_id=139&case_id=18382
-describe("App should calculate taxes for draft order with product with tax class TC: AVATAX_18", () => {
-  const testCase = e2e("Product with tax class [pricesEnteredWithTax: True]");
+// Testmo: https://saleor.testmo.net/repositories/6?group_id=4846&case_id=24363
+describe("App should exempt taxes on draft order with metadata avataxEntityCode TC: AVATAX_36", () => {
+  const testCase = e2e("draft order with avataxEntityCode [pricesEnteredWithTax: True]");
   const staffCredentials = {
     email: process.env.E2E_USER_NAME as string,
     password: process.env.E2E_USER_PASSWORD as string,
   };
 
+  const metadata = [
+    {
+      key: "avataxEntityCode",
+      value: "A",
+    },
+  ];
   const CURRENCY = "USD";
   const TOTAL_GROSS_PRICE_BEFORE_SHIPPING = 15;
   const TOTAL_NET_PRICE_BEFORE_SHIPPING = 13.78;
@@ -51,14 +56,14 @@ describe("App should calculate taxes for draft order with product with tax class
       .stores("StaffUserToken", "data.tokenCreate.token")
       .retry();
   });
-  it("creates order with product with tax class", async () => {
+  it("creates order with lines and addresses", async () => {
     await testCase
-      .step("Create order with product with tax class")
+      .step("Create order with lines and addressess")
       .spec()
       .post("/graphql/")
       .withGraphQLQuery(CreateDraftOrder)
       .withGraphQLVariables({
-        "@DATA:TEMPLATE@": "DraftOrder:PricesWithTax",
+        "@DATA:TEMPLATE@": "DraftOrder:LinesAndAddresses",
       })
       .withHeaders({
         Authorization: "Bearer $S{StaffUserToken}",
@@ -73,56 +78,17 @@ describe("App should calculate taxes for draft order with product with tax class
           },
         },
       })
-      .stores("OrderID", "data.draftOrderCreate.order.id");
-  });
-  it("should create order lines as staff user", async () => {
-    await testCase
-      .step("Create order lines as staff user")
-      .spec()
-      .post("/graphql/")
-      .withGraphQLQuery(CreateOrderLines)
-      .withGraphQLVariables({
-        orderId: "$S{OrderID}",
-        input: [{ quantity: 10, variantId: "$M{Product.Juice.variantId}" }],
-      })
-      .withHeaders({
-        Authorization: "Bearer $S{StaffUserToken}",
-      })
-      .expectStatus(200)
-      .expectJson("data.orderLinesCreate.orderLines[0].quantity", 10)
       .expectJson(
-        "data.orderLinesCreate.order.total.gross.amount",
-        TOTAL_GROSS_PRICE_BEFORE_SHIPPING,
-      );
-  });
-  it("should update order as staff user", async () => {
-    await testCase
-      .step("Update order as staff user")
-      .spec()
-      .post("/graphql/")
-      .withGraphQLQuery(DraftOrderUpdateAddress)
-      .withGraphQLVariables({
-        "@DATA:TEMPLATE@": "DraftOrder:Address",
-        "@OVERRIDES@": {
-          orderId: "$S{OrderID}",
-        },
-      })
-      .withHeaders({
-        Authorization: "Bearer $S{StaffUserToken}",
-      })
-      .expectStatus(200)
-      .expectJson("data.draftOrderUpdate.order.id", "$S{OrderID}")
-      .expectJson(
-        "data.draftOrderUpdate.order.total",
+        "data.draftOrderCreate.order.total",
         getCompleteMoney({
           gross: TOTAL_GROSS_PRICE_BEFORE_SHIPPING,
           net: TOTAL_NET_PRICE_BEFORE_SHIPPING,
           tax: TOTAL_TAX_PRICE_BEFORE_SHIPPING,
           currency: CURRENCY,
         }),
-      );
+      )
+      .stores("OrderID", "data.draftOrderCreate.order.id");
   });
-
   it("should update order's shipping method as staff user", async () => {
     await testCase
       .step("Update shipping method as staff user")
@@ -159,7 +125,58 @@ describe("App should calculate taxes for draft order with product with tax class
         }),
       );
   });
-
+  it("should apply the entity code metadata to the draft order", async () => {
+    await testCase
+      .step("Update draft order metadata")
+      .spec()
+      .post("/graphql/")
+      .withGraphQLQuery(UpdateMetadata)
+      .withGraphQLVariables({
+        id: "$S{OrderID}",
+        input: metadata,
+      })
+      .withHeaders({
+        Authorization: "Bearer $S{StaffUserToken}",
+      })
+      .expectStatus(200)
+      .expectJson("data.updateMetadata.item.metadata", metadata);
+  });
+  it("should update order to recalculate taxes after applying the metadata", async () => {
+    await testCase
+      .step("Update shipping method to recalculate taxes")
+      .spec()
+      .post("/graphql/")
+      .withGraphQLQuery(DraftOrderUpdateShippingMethod)
+      .withGraphQLVariables({
+        "@DATA:TEMPLATE@": "DraftOrder:PricesWithTax:ShippingMethod",
+        "@OVERRIDES@": {
+          orderId: "$S{OrderID}",
+        },
+      })
+      .withHeaders({
+        Authorization: "Bearer $S{StaffUserToken}",
+      })
+      .expectStatus(200)
+      .expectJson("data.orderUpdateShipping.order.id", "$S{OrderID}")
+      .expectJson(
+        "data.orderUpdateShipping.order.total",
+        getCompleteMoney({
+          gross: TOTAL_GROSS_PRICE_AFTER_SHIPPING,
+          net: TOTAL_GROSS_PRICE_AFTER_SHIPPING,
+          tax: 0,
+          currency: CURRENCY,
+        }),
+      )
+      .expectJson(
+        "data.orderUpdateShipping.order.shippingPrice",
+        getCompleteMoney({
+          gross: TOTAL_GROSS_SHIPPING_PRICE,
+          net: TOTAL_GROSS_SHIPPING_PRICE,
+          tax: 0,
+          currency: CURRENCY,
+        }),
+      );
+  });
   it("should complete draft order", async () => {
     await testCase
       .step("Complete draft order")

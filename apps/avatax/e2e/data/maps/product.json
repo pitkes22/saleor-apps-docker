@@ -14,6 +14,16 @@
       "variantId": "UHJvZHVjdFZhcmlhbnQ6Mzkw",
       "id": "UHJvZHVjdDoxNTc=",
       "name": "Reversed Monotype Tee"
+    },
+    "ProductOnCatalogPromotion": {
+      "variantId": "UHJvZHVjdFZhcmlhbnQ6MzM1",
+      "id": "UHJvZHVjdDoxMjk=",
+      "name": "Dash Force"
+    },
+    "DigitalProduct": {
+      "variantId": "UHJvZHVjdFZhcmlhbnQ6NDAx",
+      "id": "UHJvZHVjdDoxNjQ=",
+      "name": "Gift card 50"
     }
   }
 }
