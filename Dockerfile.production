@@ -28,6 +28,10 @@ COPY --from=builder /app/out/pnpm-lock.yaml ./pnpm-lock.yaml
 COPY --from=builder /app/out/pnpm-workspace.yaml ./pnpm-workspace.yaml
 COPY --from=builder /app/out/json/ .
 
+ARG APP_PATH
+# Provide default environment variables from .env.example
+COPY --from=builder /app/apps/${APP_PATH}/.env.example ./apps/${APP_PATH}/.env
+
 # Set placeholder values for envs
 # Write values to .env file
 RUN echo "AWS_ACCESS_KEY_ID=placeholder" >> ./apps/${APP_PATH}/.env && \
@@ -38,9 +42,7 @@ RUN echo "AWS_ACCESS_KEY_ID=placeholder" >> ./apps/${APP_PATH}/.env && \
     echo "SECRET_KEY=placeholder" >> ./apps/${APP_PATH}/.env && \
     echo "APL=file" >> ./apps/${APP_PATH}/.env
 
-ARG APP_PATH
-# Provide default environment variables from .env.example
-COPY --from=builder /app/apps/${APP_PATH}/.env.example ./apps/${APP_PATH}/.env
+
 # Install dependencies
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
