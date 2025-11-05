@@ -38,8 +38,6 @@ ENV AWS_ACCESS_KEY_ID="placeholder" \
     APL="file"
 
 ARG APP_PATH
-# Provide default environment variables from .env.example
-COPY --from=builder /app/apps/${APP_PATH}/.env.example ./apps/${APP_PATH}/.env
 
 # Install dependencies
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
