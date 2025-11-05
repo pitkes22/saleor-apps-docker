@@ -65,14 +65,14 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: |
-            ${{ env.REGISTRY }}/${{ github.repository_owner }}/saleor-apps-${{ matrix.app_name }}
+            ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ matrix.app_path }}
           tags: |
             type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
             type=sha
             type=ref,event=tag
           labels: |
             org.opencontainers.image.source=${{ github.repository }}
-            org.opencontainers.image.title=saleor-apps-${{ matrix.app_path }}
+            org.opencontainers.image.title=${{ matrix.app_path }}
 
       - name: Build and push
         uses: docker/build-push-action@v5
