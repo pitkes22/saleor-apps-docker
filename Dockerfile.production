@@ -29,16 +29,18 @@ COPY --from=builder /app/out/pnpm-workspace.yaml ./pnpm-workspace.yaml
 COPY --from=builder /app/out/json/ .
 
 # Set placeholder values for envs
-ENV AWS_ACCESS_KEY_ID="placeholder" \
-    AWS_REGION="placeholder" \
-    AWS_SECRET_ACCESS_KEY="placeholder" \
-    DYNAMODB_LOGS_TABLE_NAME="placeholder" \
-    DYNAMODB_MAIN_TABLE_NAME="placeholder" \
-    SECRET_KEY="placeholder" \
-    APL="file"
+# Write values to .env file
+RUN echo "AWS_ACCESS_KEY_ID=placeholder" >> ./apps/${APP_PATH}/.env && \
+    echo "AWS_REGION=placeholder" >> ./apps/${APP_PATH}/.env && \
+    echo "AWS_SECRET_ACCESS_KEY=placeholder" >> ./apps/${APP_PATH}/.env && \
+    echo "DYNAMODB_LOGS_TABLE_NAME=placeholder" >> ./apps/${APP_PATH}/.env && \
+    echo "DYNAMODB_MAIN_TABLE_NAME=placeholder" >> ./apps/${APP_PATH}/.env && \
+    echo "SECRET_KEY=placeholder" >> ./apps/${APP_PATH}/.env && \
+    echo "APL=file" >> ./apps/${APP_PATH}/.env
 
 ARG APP_PATH
-
+# Provide default environment variables from .env.example
+COPY --from=builder /app/apps/${APP_PATH}/.env.example ./apps/${APP_PATH}/.env
 # Install dependencies
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
