@@ -4,7 +4,7 @@ on:
   push:
     branches: [ main ]
     tags:
-      - "v*"
+      - "*"
   workflow_dispatch:
 
 permissions:
@@ -60,7 +60,19 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Extract package name and version from tag
+        if: ${{ startsWith(github.ref, 'refs/tags/') }}
+        id: extract
+        run: |
+          TAG=${GITHUB_REF#refs/tags/}
+          PACKAGE_NAME=${TAG%@*}
+          VERSION=${TAG#*@}
+
+          echo "APP_NAME=${PACKAGE_NAME}" >> $GITHUB_ENV
+          echo "VERSION=${VERSION}" >> $GITHUB_ENV
+
       - name: Docker meta
+        if: ${{ github.ref == 'refs/heads/main' }}
         id: meta
         uses: docker/metadata-action@v5
         with:
@@ -77,7 +89,8 @@ jobs:
             org.opencontainers.image.source=${{ github.repository }}
             org.opencontainers.image.title=${{ matrix.app_path }}
 
-      - name: Build and push
+      - name: Build and push (main)
+        if: ${{ github.ref == 'refs/heads/main' }}
         uses: docker/build-push-action@v5
         with:
           context: .
@@ -90,5 +103,23 @@ jobs:
             APP_PATH=${{ matrix.app_path }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build and push (tag)
+        if: ${{ startsWith(github.ref, 'refs/tags/') && matrix.app_name == env.APP_NAME }}
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile.production
+          push: true
+          platforms: linux/amd64
+          build-args: |
+            APP_NAME=${{ matrix.app_name }}
+            APP_PATH=${{ matrix.app_path }}
+          tags: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ matrix.app_path }}:${{ env.VERSION }}
+          labels: |
+            org.opencontainers.image.source=${{ github.repository }}
+            org.opencontainers.image.title=${{ matrix.app_path }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
