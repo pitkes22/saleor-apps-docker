@@ -65,7 +65,7 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: |
-            ${{ env.REGISTRY }}/${{ github.repository_owner }}/saleor-apps-${{ matrix.app_path }}
+            ${{ env.REGISTRY }}/${{ github.repository_owner }}/saleor-apps-${{ matrix.app_name }}
           tags: |
             type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
             type=sha
