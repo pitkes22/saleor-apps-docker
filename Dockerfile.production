@@ -55,6 +55,8 @@ ARG APP_PATH
 COPY --from=installer --chown=nextjs:nodejs /app/apps/${APP_PATH}/.next/standalone ./
 COPY --from=installer --chown=nextjs:nodejs /app/apps/${APP_PATH}/.next/static ./apps/${APP_PATH}/.next/static
 COPY --from=installer --chown=nextjs:nodejs /app/apps/${APP_PATH}/public ./apps/${APP_PATH}/public
+# Provide default environment variables from .env.example
+COPY --from=installer --chown=nextjs:nodejs /app/apps/${APP_PATH}/.env.example ./apps/${APP_PATH}/.env
 
 USER nextjs
 
