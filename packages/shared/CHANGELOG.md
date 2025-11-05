@@ -1,5 +1,66 @@
 # @saleor/apps-shared
 
+## 1.14.0
+
+### Minor Changes
+
+- 6b9305d3: Introduce `isSaleorCompatible` method to `SaleorVersionCompatibilityValidator` that accepts `SaleorSchemaVersion` tuple (e.g., `[3, 22]`) for version validation. This complements the existing `isValid` and `validateOrThrow` methods that work with string versions (e.g., `"3.13.0"`). The new method enables more convenient validation when working with Saleor's schema version format from app metadata.
+
+## 1.13.1
+
+### Patch Changes
+
+- 16b87f53: Update MacawUI to 1.3.0
+
+## 1.13.0
+
+### Minor Changes
+
+- 00070dc3: Add Encryptor from Stripe
+
+## 1.12.3
+
+### Patch Changes
+
+- e3c75265: Added `race` function. This utility helps prevent promises from hanging indefinitely by adding a timeout constraint. If the original promise doesn't resolve within the specified timeout, the race will reject with the provided error.
+
+## 1.12.2
+
+### Patch Changes
+
+- da9899d5: Cleanup deps, peerDeps & devDependencies for package
+
+## 1.12.1
+
+### Patch Changes
+
+- 996d9be1: Use [PNPM catalogs](https://pnpm.io/catalogs) feature to ensure that dependencies are in sync between different packages in monorepo.
+
+## 1.12.0
+
+### Minor Changes
+
+- defa0b60: Add `compose` function that can be used to compose multiple functions into one:
+
+  ```ts
+  // before
+  export default wrapWithLoggerContext(withSpanAttributes(handler));
+  // after
+  export default compose(withLoggerContext, withSpanAttributes)(handler);
+  ```
+
+## 1.11.4
+
+### Patch Changes
+
+- 9bbf9ee5: Fixed autofixable linting issues. No functional changes.
+
+## 1.11.3
+
+### Patch Changes
+
+- 83ad6531: Updated Node.js to 22.11
+
 ## 1.11.2
 
 ### Patch Changes

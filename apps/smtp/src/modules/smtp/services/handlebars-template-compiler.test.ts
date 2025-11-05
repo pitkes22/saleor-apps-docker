@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import { HandlebarsTemplateCompiler } from "./handlebars-template-compiler";
 
 describe("HandlebarsTemplateCompiler", () => {
@@ -6,7 +7,7 @@ describe("HandlebarsTemplateCompiler", () => {
     const compiler = new HandlebarsTemplateCompiler();
     const result = compiler.compile("Template {{foo}}", { foo: "bar" });
 
-    expect(result._unsafeUnwrap()).toEqual({ template: "Template bar" });
+    expect(result._unsafeUnwrap()).toStrictEqual({ template: "Template bar" });
   });
 
   it("Returns error if compilation failed", () => {
@@ -23,11 +24,11 @@ describe("HandlebarsTemplateCompiler", () => {
     const result1 = compiler.compile(template, { foo: "bar" });
     const result2 = compiler.compile(template, { foo: "not-bar" });
 
-    expect(result1._unsafeUnwrap()).toEqual({
+    expect(result1._unsafeUnwrap()).toStrictEqual({
       template: "I should render",
     });
 
-    expect(result2._unsafeUnwrap()).toEqual({
+    expect(result2._unsafeUnwrap()).toStrictEqual({
       template: "I should render otherwise",
     });
   });

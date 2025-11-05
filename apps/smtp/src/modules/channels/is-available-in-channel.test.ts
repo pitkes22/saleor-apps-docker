@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import { isAvailableInChannel } from "./is-available-in-channel";
 
 describe("isAvailableInChannel", function () {
@@ -12,7 +13,7 @@ describe("isAvailableInChannel", function () {
           override: false,
         },
       }),
-    ).toEqual(true);
+    ).toStrictEqual(true);
   });
 
   describe("Restrict mode", () => {
@@ -26,7 +27,7 @@ describe("isAvailableInChannel", function () {
             override: true,
           },
         }),
-      ).toEqual(false);
+      ).toStrictEqual(false);
     });
     it("Fails if tested channel is not on the list", () => {
       expect(
@@ -38,7 +39,7 @@ describe("isAvailableInChannel", function () {
             override: true,
           },
         }),
-      ).toEqual(false);
+      ).toStrictEqual(false);
     });
     it("Passes if tested channel is on the list", () => {
       expect(
@@ -50,7 +51,7 @@ describe("isAvailableInChannel", function () {
             override: true,
           },
         }),
-      ).toEqual(true);
+      ).toStrictEqual(true);
     });
   });
 
@@ -65,7 +66,7 @@ describe("isAvailableInChannel", function () {
             override: true,
           },
         }),
-      ).toEqual(true);
+      ).toStrictEqual(true);
     });
     it("Passes if other channels are specified", () => {
       expect(
@@ -77,7 +78,7 @@ describe("isAvailableInChannel", function () {
             override: true,
           },
         }),
-      ).toEqual(true);
+      ).toStrictEqual(true);
     });
     it("Fails if channel is on the list", () => {
       expect(
@@ -89,7 +90,7 @@ describe("isAvailableInChannel", function () {
             override: true,
           },
         }),
-      ).toEqual(false);
+      ).toStrictEqual(false);
     });
   });
 });

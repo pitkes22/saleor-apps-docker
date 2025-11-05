@@ -1,7 +1,7 @@
 import Avatax from "avatax";
 import { LogOptions } from "avatax/lib/utils/logger";
 
-import packageJson from "../../../package.json";
+import { env } from "@/env";
 
 type AvataxSettings = {
   appName: string;
@@ -13,11 +13,11 @@ type AvataxSettings = {
 };
 
 const defaultAvataxSettings: AvataxSettings = {
-  appName: packageJson.name,
-  appVersion: packageJson.version,
+  appName: env.AVATAX_CLIENT_APP_NAME,
+  appVersion: env.AVATAX_CLIENT_APP_VERSION,
   environment: "sandbox",
   machineName: "tax-app",
-  timeout: parseInt(process.env.AVATAX_CLIENT_TIMEOUT ?? "15000", 10),
+  timeout: env.AVATAX_CLIENT_TIMEOUT,
 };
 
 const createAvataxSettings = ({ isSandbox }: { isSandbox: boolean }): AvataxSettings => {

@@ -3,9 +3,9 @@
 </div>
 
 <div style="text-align: center">
-  <h1>Saleor App Products feed</h1>
+  <h1>Saleor App Product Feed</h1>
 
-  <p>Product Feed app allows generating an XML file with products and their details. The file can be used as a feed source for Google Merchant Center.</p>
+  <p>The Product Feed app allows generating an XML file with products and their details. The file can be used as a feed source for Google Merchant Center.</p>
 </div>
 
 <div style="text-align: center">
@@ -17,12 +17,25 @@
 
 #### Requirements
 
-- [node v20](https://nodejs.org)
+- [node v22](https://nodejs.org)
 - [pnpm](https://pnpm.io/)
 - [ngrok](https://ngrok.com/)
 - Saleor Cloud account (free!) or local instance
-- AWS S3 bucket (if you want to store your XML file in S3 bucket)
--
+- AWS S3 bucket (if you want to store your XML file in an S3 bucket)
+
+#### Running app locally in development containers
+
+> [!IMPORTANT]
+> You can use the devcontainer Dockerfile and docker-compose.yaml directly - but remember to run `pnpm install` manually
+
+The easiest way to run Saleor for local development is to use [development containers](https://containers.dev/).
+If you have Visual Studio Code, follow their [guide](https://code.visualstudio.com/docs/devcontainers/containers#_quick-start-open-an-existing-folder-in-a-container) on how to open an existing folder in a container.
+
+The development container only creates a container; you still need to start the server.
+
+The development container will have a port opened:
+
+1. `3000` - where the app dev server will listen for requests
 
 #### Running app in development mode
 
@@ -66,17 +79,19 @@ Commands `build` and `dev` would generate schema and typed functions using Saleo
 ### Storing registration data - APL
 
 During the registration process, Saleor API passes the auth token to the app. With this token, the app can query Saleor API with privileged access (depending on permissions requested during installation).
-To store this data, the app-template uses a different [APL interface](https://github.com/saleor/saleor-app-sdk/blob/main/docs/apl.md).
+To store this data, the app-template uses a different [APL interface](https://docs.saleor.io/developer/extending/apps/developing-apps/app-sdk/apl).
 
 The choice of the APL is done using `APL` environment variable. If the value is not set, FileAPL is used. Available choices:
 
 - `file`: no additional setup is required. Good choice for local development. Can't be used for multi tenant-apps or be deployed (not intended for production)
 - `upstash`: use [Upstash](https://upstash.com/) Redis as storage method. Free account required. Can be used for development and production and supports multi-tenancy. Requires `UPSTASH_URL` and `UPSTASH_TOKEN` environment variables to be set
 
-If you want to use your own database, you can implement your own APL. [Check the documentation to read more.](https://github.com/saleor/saleor-app-sdk/blob/main/docs/apl.md)
+If you want to use your own database, you can implement your own APL. [Check the documentation to read more.](https://docs.saleor.io/developer/extending/apps/developing-apps/app-sdk/apl)
 
 ### Learn more about Saleor Apps
 
-[Apps guide](https://docs.saleor.io/docs/3.x/developer/extending/apps/key-concepts)
+[Apps guide](https://docs.saleor.io/developer/extending/apps/overview)
 
-[Configuring apps in dashboard](https://docs.saleor.io/docs/3.x/dashboard/apps)
+## OTEL
+
+Visit `@saleor/apps-otel` [README](../../packages/otel/README.md) to learn how to run app with OTEL locally.

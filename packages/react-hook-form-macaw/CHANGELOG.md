@@ -1,5 +1,35 @@
 # @saleor/react-hook-form-macaw
 
+## 0.2.15
+
+### Patch Changes
+
+- 16b87f53: Update MacawUI to 1.3.0
+
+## 0.2.14
+
+### Patch Changes
+
+- da9899d5: Cleanup deps, peerDeps & devDependencies for package
+
+## 0.2.13
+
+### Patch Changes
+
+- 996d9be1: Use [PNPM catalogs](https://pnpm.io/catalogs) feature to ensure that dependencies are in sync between different packages in monorepo.
+
+## 0.2.12
+
+### Patch Changes
+
+- 9bbf9ee5: Fixed autofixable linting issues. No functional changes.
+
+## 0.2.11
+
+### Patch Changes
+
+- 83ad6531: Updated Node.js to 22.11
+
 ## 0.2.10
 
 ### Patch Changes

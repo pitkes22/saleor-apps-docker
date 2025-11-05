@@ -30,7 +30,28 @@ export const AvataxTaxCalculationError = CriticalError.subclass("AvataxTaxCalcul
   } as CommonErrorProps,
 });
 export const AvataxInvalidAddressError = ExpectedError.subclass("AvataxInvalidAppAddressError");
-export const AvataxGetTaxError = ExpectedError.subclass("AvataxGetTaxError");
+
+export const AvataxGetTaxWrongUserInputError = ExpectedError.subclass(
+  "AvataxGetTaxWrongInputError",
+  {
+    props: {
+      _brand: "AvataxGetTaxWrongInputError" as const,
+      faultSubCode: "",
+      description: "",
+      message: "",
+    },
+  },
+);
+
+export const AvataxGetTaxSystemError = CriticalError.subclass("AvataxGetTaxSystemError", {
+  props: {
+    _brand: "AvataxGetTaxSystemError" as const,
+    faultSubCode: "",
+    description: "",
+    message: "",
+  },
+});
+
 export const AvataxInvalidCredentialsError = ExpectedError.subclass(
   "AvataxInvalidCredentialsError",
 );
@@ -53,3 +74,9 @@ export const AvataxTransactionAlreadyCancelledError = ExpectedError.subclass(
     },
   },
 );
+
+export const AvataxForbiddenAccessError = ExpectedError.subclass("AvataxForbiddenAccessError", {
+  props: {
+    description: "",
+  },
+});

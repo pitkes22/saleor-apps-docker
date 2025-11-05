@@ -1,13 +1,18 @@
-import { SmtpMetadataManager } from "./smtp-metadata-manager";
-import { SmtpConfig, SmtpConfiguration, SmtpEventConfiguration } from "./smtp-config-schema";
-import { MessageEventTypes } from "../../event-handlers/message-event-types";
-import { generateRandomId } from "../../../lib/generate-random-id";
-import { smtpDefaultEmptyConfigurations } from "./smtp-default-empty-configurations";
-import { filterConfigurations } from "../../app-configuration/filter-configurations";
-import { FeatureFlagService } from "../../feature-flag-service/feature-flag-service";
-import { createLogger } from "../../../logger";
-import { BaseError } from "../../../errors";
 import { err, errAsync, fromAsyncThrowable, ok, okAsync, ResultAsync } from "neverthrow";
+
+import { BaseError } from "../../../errors";
+import { generateRandomId } from "../../../lib/generate-random-id";
+import { createLogger } from "../../../logger";
+import { filterConfigurations } from "../../app-configuration/filter-configurations";
+import { MessageEventTypes } from "../../event-handlers/message-event-types";
+import { FeatureFlagService } from "../../feature-flag-service/feature-flag-service";
+import { EmailCompiler, ErrorContext } from "../services/email-compiler";
+import { HandlebarsTemplateCompiler } from "../services/handlebars-template-compiler";
+import { HtmlToTextCompiler } from "../services/html-to-text-compiler";
+import { MjmlCompiler } from "../services/mjml-compiler";
+import { SmtpConfig, SmtpConfiguration, SmtpEventConfiguration } from "./smtp-config-schema";
+import { smtpDefaultEmptyConfigurations } from "./smtp-default-empty-configurations";
+import { SmtpMetadataManager } from "./smtp-metadata-manager";
 
 const logger = createLogger("SmtpConfigurationService");
 
@@ -27,16 +32,28 @@ export interface IGetSmtpConfiguration {
   ): ResultAsync<SmtpConfiguration[], InstanceType<typeof BaseError>>;
 }
 
+interface TemplateValidationErrorProps {
+  errorContext?: ErrorContext;
+}
+
+function hasErrorContext(error: unknown): error is { errorContext?: ErrorContext } {
+  return error !== null && typeof error === "object" && "errorContext" in error;
+}
+
 export class SmtpConfigurationService implements IGetSmtpConfiguration {
   static SmtpConfigurationServiceError = BaseError.subclass("SmtpConfigurationServiceError");
   static ConfigNotFoundError = BaseError.subclass("ConfigNotFoundError");
   static EventConfigNotFoundError = BaseError.subclass("EventConfigNotFoundError");
   static CantFetchConfigError = BaseError.subclass("CantFetchConfigError");
   static WrongSaleorVersionError = BaseError.subclass("WrongSaleorVersionError");
+  static TemplateValidationError = BaseError.subclass("TemplateValidationError", {
+    props: {} as TemplateValidationErrorProps,
+  });
 
   private configurationData?: SmtpConfig;
   private metadataConfigurator: SmtpMetadataManager;
   private featureFlagService: FeatureFlagService;
+  private emailCompiler: EmailCompiler;
 
   constructor(args: {
     metadataManager: SmtpMetadataManager;
@@ -50,6 +67,12 @@ export class SmtpConfigurationService implements IGetSmtpConfiguration {
     }
 
     this.featureFlagService = args.featureFlagService;
+
+    this.emailCompiler = new EmailCompiler(
+      new HandlebarsTemplateCompiler(),
+      new HtmlToTextCompiler(),
+      new MjmlCompiler(),
+    );
   }
 
   /**
@@ -67,6 +90,7 @@ export class SmtpConfigurationService implements IGetSmtpConfiguration {
 
           return okAsync({ configurations: [] });
         }
+
         return okAsync(data);
       })
       .andThen((data) => {
@@ -123,6 +147,7 @@ export class SmtpConfigurationService implements IGetSmtpConfiguration {
         return true;
       }
     }
+
     return false;
   }
 
@@ -277,6 +302,38 @@ export class SmtpConfigurationService implements IGetSmtpConfiguration {
   }
 
   /**
+   * Validate event configuration templates before saving
+   */
+  private validateEventTemplates(eventConfiguration: SmtpEventConfiguration) {
+    logger.debug("Validating event templates");
+
+    const validationResult = this.emailCompiler.validate(
+      eventConfiguration.subject || "",
+      eventConfiguration.template || "",
+      {}, // Empty payload for subject and template validation
+    );
+
+    if (validationResult.isErr()) {
+      logger.info("Invalid template in configuration", { error: validationResult.error });
+
+      const errorContext = hasErrorContext(validationResult.error)
+        ? validationResult.error.errorContext
+        : undefined;
+
+      return err(
+        new SmtpConfigurationService.TemplateValidationError(validationResult.error.message, {
+          errors: [validationResult.error],
+          props: {
+            errorContext,
+          },
+        }),
+      );
+    }
+
+    return ok(undefined);
+  }
+
+  /**
    * Update event configuration for given configuration ID and event type. Throws if not found.
    */
   updateEventConfiguration({
@@ -307,6 +364,13 @@ export class SmtpConfigurationService implements IGetSmtpConfiguration {
         ...config.events[eventIndex],
         ...eventConfiguration,
       };
+
+      // Validate templates before saving
+      const validationResult = this.validateEventTemplates(updatedEventConfiguration);
+
+      if (validationResult.isErr()) {
+        return errAsync(validationResult.error);
+      }
 
       config.events[eventIndex] = updatedEventConfiguration;
 

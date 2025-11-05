@@ -1,6 +1,6 @@
-import { NextWebhookApiHandler } from "@saleor/app-sdk/handlers/next";
+import { NextJsWebhookHandler } from "@saleor/app-sdk/handlers/next";
 import { wrapWithLoggerContext } from "@saleor/apps-logger/node";
-import { withOtel } from "@saleor/apps-otel";
+import { withSpanAttributes } from "@saleor/apps-otel/src/with-span-attributes";
 
 import { ProductVariantCreated } from "../../../../../generated/graphql";
 import { AlgoliaErrorParser } from "../../../../lib/algolia/algolia-error-parser";
@@ -17,7 +17,7 @@ export const config = {
 
 const logger = createLogger("webhookProductVariantCreatedWebhookHandler");
 
-export const handler: NextWebhookApiHandler<ProductVariantCreated> = async (req, res, context) => {
+export const handler: NextJsWebhookHandler<ProductVariantCreated> = async (req, res, context) => {
   const { event, authData } = context;
 
   logger.info(`New event received: ${event} (${context.payload?.__typename})`, {
@@ -28,6 +28,7 @@ export const handler: NextWebhookApiHandler<ProductVariantCreated> = async (req,
 
   if (!productVariant) {
     logger.error("Webhook did not received expected product data in the payload.");
+
     return res.status(200).end();
   }
 
@@ -38,6 +39,7 @@ export const handler: NextWebhookApiHandler<ProductVariantCreated> = async (req,
       await algoliaClient.createProductVariant(productVariant);
 
       res.status(200).end();
+
       return;
     } catch (e) {
       if (AlgoliaErrorParser.isRecordSizeTooBigError(e)) {
@@ -67,9 +69,6 @@ export const handler: NextWebhookApiHandler<ProductVariantCreated> = async (req,
 };
 
 export default wrapWithLoggerContext(
-  withOtel(
-    webhookProductVariantCreated.createHandler(handler),
-    "api/webhooks/saleor/product_variant_created",
-  ),
+  withSpanAttributes(webhookProductVariantCreated.createHandler(handler)),
   loggerContext,
 );

@@ -1,5 +1,47 @@
 # @saleor/apps-ui
 
+## 1.3.1
+
+### Patch Changes
+
+- 16b87f53: Update MacawUI to 1.3.0
+
+## 1.3.0
+
+### Minor Changes
+
+- 7a834f53: Add EmptyConfigs component which renders placeholder for missing configurations and button to add a new one
+- 674b4fa0: Add DeleteConfigurationModalContent that shares common UI for rendering content of modal that deletes configuration
+
+### Patch Changes
+
+- 7a834f53: Used shared EmptyConfigs component form @saleor/apps-ui
+- b1c0139a: Added ConfigsList component that abstracts common list rendering
+
+## 1.2.12
+
+### Patch Changes
+
+- da9899d5: Cleanup deps, peerDeps & devDependencies for package
+
+## 1.2.11
+
+### Patch Changes
+
+- 996d9be1: Use [PNPM catalogs](https://pnpm.io/catalogs) feature to ensure that dependencies are in sync between different packages in monorepo.
+
+## 1.2.10
+
+### Patch Changes
+
+- 9bbf9ee5: Fixed autofixable linting issues. No functional changes.
+
+## 1.2.9
+
+### Patch Changes
+
+- 83ad6531: Updated Node.js to 22.11
+
 ## 1.2.8
 
 ### Patch Changes

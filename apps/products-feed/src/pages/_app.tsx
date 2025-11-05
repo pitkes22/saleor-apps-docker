@@ -1,12 +1,15 @@
 import "@saleor/macaw-ui/style";
+
 import { AppBridge, AppBridgeProvider } from "@saleor/app-sdk/app-bridge";
-import React from "react";
-import { AppProps } from "next/app";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { RoutePropagator } from "@saleor/app-sdk/app-bridge/next";
-import { ThemeSynchronizer } from "../lib/theme-synchronizer";
+import { IframeProtectedFallback } from "@saleor/apps-shared/iframe-protected-fallback";
+import { IframeProtectedWrapper } from "@saleor/apps-shared/iframe-protected-wrapper";
+import { NoSSRWrapper } from "@saleor/apps-shared/no-ssr-wrapper";
+import { ThemeSynchronizer } from "@saleor/apps-shared/theme-synchronizer";
 import { Box, ThemeProvider } from "@saleor/macaw-ui";
-import { NoSSRWrapper } from "@saleor/apps-shared";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { AppProps } from "next/app";
+
 import { trpcClient } from "../modules/trpc/trpc-client";
 
 /**
@@ -25,17 +28,22 @@ const queryClient = new QueryClient({
 function NextApp({ Component, pageProps }: AppProps) {
   return (
     <NoSSRWrapper>
-      <AppBridgeProvider appBridgeInstance={appBridgeInstance}>
-        <ThemeProvider>
-          <ThemeSynchronizer />
-          <RoutePropagator />
-          <QueryClientProvider client={queryClient}>
-            <Box padding={10}>
-              <Component {...pageProps} />
-            </Box>
-          </QueryClientProvider>
-        </ThemeProvider>
-      </AppBridgeProvider>
+      <ThemeProvider>
+        <IframeProtectedWrapper
+          allowedPathNames={["/"]}
+          fallback={<IframeProtectedFallback appName="Saleor Products Feed App" />}
+        >
+          <AppBridgeProvider appBridgeInstance={appBridgeInstance}>
+            <ThemeSynchronizer />
+            <RoutePropagator />
+            <QueryClientProvider client={queryClient}>
+              <Box padding={10}>
+                <Component {...pageProps} />
+              </Box>
+            </QueryClientProvider>
+          </AppBridgeProvider>
+        </IframeProtectedWrapper>
+      </ThemeProvider>
     </NoSSRWrapper>
   );
 }

@@ -1,13 +1,13 @@
-import { EditorJsPlaintextRenderer } from "@saleor/apps-shared";
+import { EditorJsPlaintextRenderer } from "@saleor/apps-shared/editor-js-plaintext-renderer";
+
 import {
-  AttributeInputTypeEnum,
   ProductAttributesDataFragment,
   ProductVariantWebhookPayloadFragment,
 } from "../../../generated/graphql";
+import { AlgoliaRootFields, AlgoliaRootFieldsKeys } from "../algolia-fields";
 import { isNotNil } from "../isNotNil";
 import { safeParseJson } from "../safe-parse-json";
 import { metadataToAlgoliaAttribute } from "./metadata-to-algolia-attribute";
-import { AlgoliaRootFields, AlgoliaRootFieldsKeys } from "../algolia-fields";
 
 type PartialChannelListing = {
   channel: {
@@ -67,13 +67,13 @@ export type AlgoliaObject = ReturnType<typeof productAndVariantToAlgolia>;
 
 const isAttributeValueBooleanType = (
   attributeValue: ProductAttributesDataFragment["values"],
-): attributeValue is [{ boolean: boolean; inputType: AttributeInputTypeEnum.Boolean }] => {
+): attributeValue is [{ boolean: boolean; inputType: "BOOLEAN" }] => {
   return (
     /**
-     * Boolean type can be only a single value. List API exists due to multi-value fields like multiselects
+     * Boolean type can be only a single value. List API exists due to multi-value fields like multiselect
      */
     attributeValue.length === 1 &&
-    attributeValue[0].inputType === AttributeInputTypeEnum.Boolean &&
+    attributeValue[0].inputType === "BOOLEAN" &&
     typeof attributeValue[0].boolean === "boolean"
   );
 };
@@ -92,7 +92,7 @@ const mapSelectedAttributesToRecord = (attr: ProductAttributesDataFragment) => {
    */
   const filteredValues = attr.values.filter((v) => !!v.name?.length);
 
-  let value: string | boolean;
+  let value: string | boolean | string[];
 
   /**
    * Strategy for boolean type only
@@ -101,18 +101,20 @@ const mapSelectedAttributesToRecord = (attr: ProductAttributesDataFragment) => {
    */
   if (isAttributeValueBooleanType(filteredValues)) {
     value = filteredValues[0].boolean;
+  } else if (filteredValues.length === 1 && filteredValues[0].name) {
+    value = filteredValues[0].name;
   } else {
     /**
      * Fallback to initial/previous behavior
      * TODO: Its not correct to use "name" field always. E.g. for plaintext field more accurate is "plainText",
      *   for "date" field there are date and dateTime fields. "Name" can work on the frontend but doesn't fit for faceting
      */
-    value = filteredValues.map((v) => v.name).join(", ") || "";
+    value = filteredValues.map((v) => v.name).filter(isNotNil);
   }
 
   return {
     [attr.attribute.name]: value,
-  } as Record<string, string | boolean>;
+  } as Record<string, string | boolean | string[]>;
 };
 
 export function productAndVariantToAlgolia({
@@ -132,6 +134,7 @@ export function productAndVariantToAlgolia({
       if (!preparedAttr) {
         return acc;
       }
+
       return {
         ...acc,
         ...preparedAttr,
@@ -143,6 +146,7 @@ export function productAndVariantToAlgolia({
       if (!preparedAttr) {
         return acc;
       }
+
       return {
         ...acc,
         ...preparedAttr,
@@ -171,7 +175,7 @@ export function productAndVariantToAlgolia({
     attributes,
     media,
     description: safeParseJson(product.description),
-    descriptionPlaintext: EditorJsPlaintextRenderer({ stringData: product.description }),
+    descriptionPlaintext: EditorJsPlaintextRenderer({ stringData: product.description ?? "" }),
     slug: product.slug,
     thumbnail: product.thumbnail?.url,
     /**
@@ -227,7 +231,16 @@ export function productAndVariantToAlgolia({
     collections: product.collections?.map((collection) => collection.name) || [],
     metadata: metadataToAlgoliaAttribute(variant.product.metadata),
     variantMetadata: metadataToAlgoliaAttribute(variant.metadata),
-    otherVariants: variant.product.variants?.map((v) => v.id).filter((v) => v !== variant.id) || [],
+    otherVariants:
+      variant.product.variants
+        ?.filter((v) => {
+          // Filter out the current variant
+          if (v.id === variant.id) return false;
+
+          // Filter out variants that don't have channel listings for the current channel
+          return v.channelListings?.some((cl) => cl.channel.slug === channel) ?? false;
+        })
+        .map((v) => v.id) || [],
   } satisfies Record<AlgoliaRootFields | string, unknown>;
 
   // todo refactor

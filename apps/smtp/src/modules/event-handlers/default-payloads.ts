@@ -1,8 +1,6 @@
-import { MessageEventTypes } from "./message-event-types";
 import {
   GiftCardSentWebhookPayloadFragment,
   InvoiceSentWebhookPayloadFragment,
-  LanguageCodeEnum,
   OrderCancelledWebhookPayloadFragment,
   OrderConfirmedWebhookPayloadFragment,
   OrderCreatedWebhookPayloadFragment,
@@ -10,21 +8,22 @@ import {
   OrderFulfilledWebhookPayloadFragment,
   OrderFullyPaidWebhookPayloadFragment,
   OrderRefundedWebhookPayloadFragment,
-  OrderStatus,
 } from "../../../generated/graphql";
 import {
+  NotifyPayloadAccountChangeEmailConfirmation,
   NotifyPayloadAccountChangeEmailRequest,
   NotifyPayloadAccountConfirmation,
   NotifyPayloadAccountDelete,
   NotifyPayloadAccountPasswordReset,
   NotifyPayloadFulfillmentUpdate,
 } from "../../lib/notify-event-types";
+import { MessageEventTypes } from "./message-event-types";
 
 const exampleOrderPayload: OrderDetailsFragment = {
   id: "T3JkZXI6NTdiNTBhNDAtYzRmYi00YjQzLWIxODgtM2JhZmRlMTc3MGQ5",
   number: "198",
-  status: OrderStatus.Unfulfilled,
-  languageCodeEnum: LanguageCodeEnum.En,
+  status: "UNFULFILLED",
+  languageCodeEnum: "EN",
   created: "",
   displayGrossPrices: true,
   isShippingRequired: true,
@@ -48,7 +47,7 @@ const exampleOrderPayload: OrderDetailsFragment = {
     email: "adrian.king@example.com",
     firstName: "Adrian",
     lastName: "King",
-    languageCode: LanguageCodeEnum.En,
+    languageCode: "EN",
   },
   billingAddress: {
     firstName: "Adrian",
@@ -311,7 +310,7 @@ const accountChangeEmailRequestPayload: NotifyPayloadAccountChangeEmailRequest =
   token: "bmt4kc-d6e379b762697f6aa357527af36bb9f6",
   old_email: "test@example.com1",
   new_email: "new.email@example.com1",
-  reset_url:
+  redirect_url:
     "http://example.com/reset?email=user%40example.com&token=bmt4kc-d6e379b762697f6aa357527af36bb9f6",
   channel_slug: "default-channel",
   domain: "demo.saleor.cloud",
@@ -319,7 +318,7 @@ const accountChangeEmailRequestPayload: NotifyPayloadAccountChangeEmailRequest =
   logo_url: "",
 };
 
-const accountChangeEmailConfirmPayload: NotifyPayloadAccountChangeEmailRequest = {
+const accountChangeEmailConfirmPayload: NotifyPayloadAccountChangeEmailConfirmation = {
   user: {
     id: "VXNlcjoxOTY=",
     email: "user@example.com",
@@ -334,9 +333,6 @@ const accountChangeEmailConfirmPayload: NotifyPayloadAccountChangeEmailRequest =
   recipient_email: "user@example.com",
   old_email: "old@example.com",
   new_email: "new@example.com",
-  token: "bmt4kc-d6e379b762697f6aa357527af36bb9f6",
-  reset_url:
-    "http://example.com/reset?email=user%40example.com&token=bmt4kc-d6e379b762697f6aa357527af36bb9f6",
   channel_slug: "default-channel",
   domain: "demo.saleor.cloud",
   site_name: "Saleor e-commerce",

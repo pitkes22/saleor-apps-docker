@@ -5,44 +5,67 @@
 </div>
 
 <div align="center">
-  <p>Connect your dynamic taxes calculation to AvaTax API.</p>
+  <p>Connect your dynamic tax calculations to the AvaTax API.</p>
 </div>
 
 <div align="center">
   <a href="https://saleor.io/">🏠 Website</a>
   <span> • </span>
-  <a href="https://docs.saleor.io/docs/3.x/">📚 Docs</a>
+  <a href="https://docs.saleor.io/">📚 Docs</a>
   <span> • </span>
   <a href="https://saleor.io/blog/">📰 Blog</a>
   <span> • </span>
   <a href="https://twitter.com/getsaleor">🐦 Twitter</a>
 </div>
 
-## Documentation
+## Running app locally in development containers
 
-Visit [AvaTax App documentation](https://docs.saleor.io/docs/3.x/developer/app-store/apps/avatax/overview) to learn how to configure and develop the app locally.
+> [!IMPORTANT]
+> You can use the devcontainer Dockerfile and docker-compose.yaml directly - but remember to run `pnpm install` and `pnpm setup-dynamodb` manually
 
-### DynamoDB
+The easiest way to run Saleor for local development is to use [development containers](https://containers.dev/).
+If you have Visual Studio Code, follow their [guide](https://code.visualstudio.com/docs/devcontainers/containers#_quick-start-open-an-existing-folder-in-a-container) on how to open an existing folder in a container.
 
-DynamoDB is used to store Client-side logs. To develop this feature locally:
+The development container only creates a container; you still need to start the server. See the [common-commands](#common-commands) section to learn more.
+
+The development container will have two ports opened:
+
+1. `3000` - where the AvaTax app dev server will listen for requests
+2. `8000` - where the local DynamoDB will listen for requests and allow [NoSQL Workbench for DynamoDB](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/workbench.html) to connect
+
+### Common commands
+
+Running the app in development server:
+
+```shell
+pnpm run dev
+```
+
+Running tests:
+
+```shell
+pnpm run test
+```
+
+## DynamoDB
+
+DynamoDB is used to store client-side logs and auth data. To develop this feature locally, use development containers or use [docker-compose](../../.devcontainer/avatax/docker-compose.yml) from `.devcontainer`:
 
 1. Run `docker compose up` for local DynamoDB instance
-2. Run `bash scripts/setup-dynamodb.sh` to describe DynamoDB table
+2. Run `pnpm run setup-dynamodb` to create the DynamoDB table
 
-Ensure following env variables are set
+Ensure the following env variables are set:
 
 ```dotenv
-FF_ENABLE_EXPERIMENTAL_LOGS=true
 DYNAMODB_LOGS_ITEM_TTL_IN_DAYS=30
-DYNAMODB_LOGS_TABLE_NAME=avatax-client-logs # must match scripts/setup-dynamodb.sh
+DYNAMODB_LOGS_TABLE_NAME=avatax-client-logs
+DYNAMODB_MAIN_TABLE_NAME=avatax-main-table
 ```
 
 Alternatively, you can connect to AWS-based DynamoDB:
 
-1. Create table in your AWS, based on parameters in `scripts/setup-dynamodb.sh`
+1. Create a table in your AWS, based on the parameters in [`scripts/setup-dynamodb.ts`](./scripts/setup-dynamodb.ts)
 2. Set AWS-specific [env variables](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/loading-node-credentials-environment.html)
-
-If `FF_ENABLE_EXPERIMENTAL_LOGS` is not set, you don't have to provide anything - feature will be disabled
 
 ## Testing
 
@@ -119,13 +142,13 @@ PROMO_CODE=
 
 The app has an example environment for `localhost` in `environments/localhost.bru`. You can copy it to bootstrap your own environment e.g `cloud.bru` (which will be ignored by git).
 
-### Webhook migration scripts
+## Webhook migration scripts
 
 > [!NOTE]
 > This section refers to apps hosted by Saleor or using REST APL. If you self host AvaTax app you need to write your own logic for updating migration scripts.
-> See [How to update app webhooks](https://docs.saleor.io/docs/3.x/developer/extending/apps/updating-app-webhooks) for more info.
+> See [How to update app webhooks](https://docs.saleor.io/developer/extending/apps/updating-app-webhooks) for more info.
 
-You need to set `REST_APL_TOKEN` & `REST_APL_ENDPOINT` in our `.env` file first. Set `DANGEROUS_ENABLE_MIGRATION_CONSOLE_LOGGER` to see migration results in your shell.
+You need to set `REST_APL_TOKEN` & `REST_APL_ENDPOINT` in our `.env` file first.
 
 Test migration with dry run, operation will not modify any data:
 
@@ -139,16 +162,10 @@ To start the migration run command:
 pnpm migrate
 ```
 
-### Running the app in docker
+## Documentation
 
-To run the app in docker, you need to build the image first (run this command in the root directory of the monorepo):
+Visit [AvaTax App documentation](https://docs.saleor.io/developer/app-store/apps/avatax/overview) to learn how to configure the app.
 
-```shell
-docker build --tag saleor-app-avatax-docker --file Dockerfile.avatax.dev .
-```
+## OTEL
 
-Then you can run the image (run this command in the root directory of the monorepo):
-
-```shell
-docker run -p 3000:3000 --env-file apps/avatax/.env saleor-app-avatax-docker
-```
+Visit `@saleor/apps-otel` [README](../../packages/otel/README.md) to learn how to run app with OTEL locally.

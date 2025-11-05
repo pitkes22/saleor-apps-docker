@@ -79,6 +79,22 @@ const ConfigurationPage: NextPage = () => {
                 here
               </TextLink>
             </Paragraph>
+            <Paragraph size={4}>
+              Required permissions:
+              <ul>
+                {[
+                  "s3:GetObject",
+                  "s3:PutObject",
+                  "s3:DeleteObject",
+                  "s3:GetObjectAttributes",
+                  "s3:ListBucket",
+                ].map((perm) => (
+                  <li key={perm}>
+                    - <code>{perm}</code>
+                  </li>
+                ))}
+              </ul>
+            </Paragraph>
           </Box>
         }
       />
@@ -100,7 +116,16 @@ const ConfigurationPage: NextPage = () => {
               <TextLink href="https://handlebarsjs.com/" newTab>
                 Handlebars
               </TextLink>{" "}
-              format. Example of the variables you can use:
+              format.
+            </Paragraph>
+            <Paragraph size={3}>
+              The app also supports{" "}
+              <TextLink href="https://github.com/helpers/handlebars-helpers/tree/master" newTab>
+                Handlebars Helpers
+              </TextLink>{" "}
+              which provides additional functionality like <code>lowercase</code>,{" "}
+              <code>uppercase</code>, and many other helpers to transform your data. Example of the
+              variables you can use:
             </Paragraph>
             <ul>
               <li>
@@ -113,10 +138,16 @@ const ConfigurationPage: NextPage = () => {
                   <code>{"{{ variant.id }}"}</code> - product variant id
                 </Text>
               </li>
+              <li>
+                <Text size={3}>
+                  <code>{"{{ lowercase variant.product.name }}"}</code> - product name in lowercase
+                  (useful for URLs)
+                </Text>
+              </li>
             </ul>
             <Paragraph size={3}>For example following pattern:</Paragraph>
             <Paragraph size={3}>
-              <code>{"https://my-shop.com/p/{{ variant.product.slug}/{{ variant.id }}"}</code>
+              <code>{"https://my-shop.com/p/{{ variant.product.slug}}/{{ variant.id }}"}</code>
             </Paragraph>
             <Paragraph size={3}>Will produce:</Paragraph>
             <Paragraph size={3}>
@@ -213,6 +244,11 @@ const ConfigurationPage: NextPage = () => {
               <li>
                 <TextLink href="https://support.google.com/merchants/answer/6324492" newTab>
                   Size
+                </TextLink>
+              </li>
+              <li>
+                <TextLink href="https://support.google.com/merchants/answer/6324504" newTab>
+                  Shipping Label
                 </TextLink>
               </li>
             </ul>

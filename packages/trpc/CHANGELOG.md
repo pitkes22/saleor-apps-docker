@@ -1,4 +1,50 @@
-# @saleor/trpc
+# @saleor/apps-trpc
+
+## 4.0.3
+
+### Patch Changes
+
+- a76465fb: Update `@saleor/app-sdk` to `v1.0.0`
+
+## 4.0.2
+
+### Patch Changes
+
+- da9899d5: Cleanup deps, peerDeps & devDependencies for package
+
+## 4.0.1
+
+### Patch Changes
+
+- 996d9be1: Use [PNPM catalogs](https://pnpm.io/catalogs) feature to ensure that dependencies are in sync between different packages in monorepo.
+- Updated dependencies [996d9be1]
+- Updated dependencies [4fce134d]
+  - @saleor/eslint-config-apps@0.4.12
+  - @saleor/apps-shared@1.12.1
+  - @saleor/typescript-config-apps@0.0.2
+
+## 4.0.0
+
+### Patch Changes
+
+- Updated dependencies [defa0b60]
+  - @saleor/apps-shared@1.12.0
+
+## 3.0.4
+
+### Patch Changes
+
+- 9bbf9ee5: Fixed autofixable linting issues. No functional changes.
+- Updated dependencies [9bbf9ee5]
+  - @saleor/apps-shared@1.11.4
+
+## 3.0.3
+
+### Patch Changes
+
+- 83ad6531: Updated Node.js to 22.11
+- Updated dependencies [83ad6531]
+  - @saleor/apps-shared@1.11.3
 
 ## 3.0.2
 

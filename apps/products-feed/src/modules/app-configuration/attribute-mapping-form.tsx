@@ -1,14 +1,13 @@
-import { AppConfigSchema, RootConfig } from "./app-config";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useDashboardNotification } from "@saleor/apps-shared/use-dashboard-notification";
+import { Box, Button, Text } from "@saleor/macaw-ui";
+import { Multiselect } from "@saleor/react-hook-form-macaw";
+import { useCallback, useMemo } from "react";
 import { useForm } from "react-hook-form";
 
-import { Box, Button, Text } from "@saleor/macaw-ui";
-
-import React, { useCallback, useMemo } from "react";
-import { Multiselect } from "@saleor/react-hook-form-macaw";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { trpcClient } from "../trpc/trpc-client";
-import { useDashboardNotification } from "@saleor/apps-shared";
 import { AttributeWithMappingFragmentFragment } from "../../../generated/graphql";
+import { trpcClient } from "../trpc/trpc-client";
+import { AppConfigSchema, RootConfig } from "./app-config";
 
 type AttributeMappingConfiguration = Exclude<RootConfig["attributeMapping"], null>;
 
@@ -72,6 +71,12 @@ export const AttributeMappingConfigurationForm = (props: Props) => {
         label="GTIN attributes"
         options={options}
       />
+      <Multiselect
+        control={control}
+        name="shippingLabelAttributeIds"
+        label="Shipping Label attributes"
+        options={options}
+      />
       <Box display={"flex"} flexDirection={"row"} gap={4} justifyContent={"flex-end"}>
         <Button type="submit" variant="primary">
           Save mapping
@@ -119,6 +124,7 @@ export const ConnectedAttributeMappingForm = () => {
       patternAttributeIds: [],
       materialAttributeIds: [],
       gtinAttributeIds: [],
+      shippingLabelAttributeIds: [],
     };
   }, [data]);
 

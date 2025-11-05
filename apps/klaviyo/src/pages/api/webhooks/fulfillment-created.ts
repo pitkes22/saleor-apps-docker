@@ -1,10 +1,10 @@
-import { NextWebhookApiHandler, SaleorAsyncWebhook } from "@saleor/app-sdk/handlers/next";
+import { NextJsWebhookHandler, SaleorAsyncWebhook } from "@saleor/app-sdk/handlers/next";
+import { wrapWithLoggerContext } from "@saleor/apps-logger/node";
+import { ObservabilityAttributes } from "@saleor/apps-otel/src/observability-attributes";
+import { withSpanAttributes } from "@saleor/apps-otel/src/with-span-attributes";
+import { createGraphQLClient } from "@saleor/apps-shared/create-graphql-client";
 import { gql } from "urql";
 
-import { wrapWithLoggerContext } from "@saleor/apps-logger/node";
-import { withOtel } from "@saleor/apps-otel";
-import { ObservabilityAttributes } from "@saleor/apps-otel/src/lib/observability-attributes";
-import { createGraphQLClient } from "@saleor/apps-shared";
 import {
   FulfillmentCreatedWebhookPayloadFragment,
   UntypedFulfillmentCreatedDocument,
@@ -72,8 +72,8 @@ export const fulfillmentCreatedWebhook =
     query: UntypedFulfillmentCreatedDocument,
   });
 
-const handler: NextWebhookApiHandler<FulfillmentCreatedWebhookPayloadFragment> = async (
-  req,
+const handler: NextJsWebhookHandler<FulfillmentCreatedWebhookPayloadFragment> = async (
+  _req,
   res,
   context,
 ) => {
@@ -103,6 +103,7 @@ const handler: NextWebhookApiHandler<FulfillmentCreatedWebhookPayloadFragment> =
 
   if (!userEmail) {
     logger.warn("Request rejected - missing user email");
+
     return res.status(400).json({ success: false, message: "No user email." });
   }
 
@@ -124,11 +125,12 @@ const handler: NextWebhookApiHandler<FulfillmentCreatedWebhookPayloadFragment> =
   }
 
   logger.info("Webhook processed successfully");
+
   return res.status(200).json({ success: true, message: "Message sent!" });
 };
 
 export default wrapWithLoggerContext(
-  withOtel(fulfillmentCreatedWebhook.createHandler(handler), "/api/webhooks/fulfillment-created"),
+  withSpanAttributes(fulfillmentCreatedWebhook.createHandler(handler)),
   loggerContext,
 );
 

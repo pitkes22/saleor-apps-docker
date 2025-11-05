@@ -1,13 +1,13 @@
-import { NextPage } from "next";
 import { Breadcrumbs } from "@saleor/apps-ui";
 import { Box, Text } from "@saleor/macaw-ui";
+import { NextPage } from "next";
 import dynamic from "next/dynamic";
 
 const DynamicCategoryMapping = dynamic(
   () => import("../modules/category-mapping/ui/category-mapping").then((m) => m.CategoryMapping),
   {
     loading: () => <Text>Loading...</Text>,
-  }
+  },
 );
 
 const CategoriesPage: NextPage = () => {

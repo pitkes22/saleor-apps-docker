@@ -187,7 +187,17 @@ export const productToProxy = (p: ProductEntry) => {
     item.push({
       "g:gtin": [
         {
-          "#text": p.gtin,
+          "#text": p.gtin, // cspell:disable-line
+        },
+      ],
+    });
+  }
+
+  if (p.shipping_label) {
+    item.push({
+      "g:shipping_label": [
+        {
+          "#text": p.shipping_label,
         },
       ],
     });

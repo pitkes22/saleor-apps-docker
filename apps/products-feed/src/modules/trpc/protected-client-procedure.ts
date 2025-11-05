@@ -1,15 +1,15 @@
-import { verifyJWT } from "@saleor/app-sdk/verify-jwt";
-import { middleware, procedure } from "./trpc-server";
+import { verifyJWT } from "@saleor/app-sdk/auth";
+import { REQUIRED_SALEOR_PERMISSIONS } from "@saleor/apps-shared/permissions";
 import { TRPCError } from "@trpc/server";
-import { ProtectedHandlerError } from "@saleor/app-sdk/handlers/next";
-import { saleorApp } from "../../saleor-app";
-import { AppConfigMetadataManager } from "../app-configuration/app-config-metadata-manager";
-import { createSettingsManager } from "../../lib/metadata-manager";
-import { AppConfig } from "../app-configuration/app-config";
-import { attachLogger } from "./middlewares";
-import { createLogger } from "../../logger";
+
 import { createInstrumentedGraphqlClient } from "../../lib/create-instrumented-graphql-client";
-import { REQUIRED_SALEOR_PERMISSIONS } from "@saleor/apps-shared";
+import { createSettingsManager } from "../../lib/metadata-manager";
+import { createLogger } from "../../logger";
+import { saleorApp } from "../../saleor-app";
+import { AppConfig } from "../app-configuration/app-config";
+import { AppConfigMetadataManager } from "../app-configuration/app-config-metadata-manager";
+import { attachLogger } from "./middlewares";
+import { middleware, procedure } from "./trpc-server";
 
 const attachAppToken = middleware(async ({ ctx, next }) => {
   const logger = createLogger("attachAppToken");
@@ -89,10 +89,14 @@ const validateClientToken = middleware(async ({ ctx, next, meta }) => {
     });
   } catch (e) {
     logger.debug("JWT verification failed, throwing");
-    throw new ProtectedHandlerError("JWT verification failed: ", "JWT_VERIFICATION_FAILED");
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: "JWT verification failed",
+    });
   }
 
   logger.debug("Token verified");
+
   return next();
 });
 

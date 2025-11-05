@@ -1,7 +1,5 @@
-/* eslint-disable turbo/no-undeclared-env-vars */
-
 import { AuthData } from "@saleor/app-sdk/APL";
-import { createGraphQLClient } from "@saleor/apps-shared";
+import { createGraphQLClient } from "@saleor/apps-shared/create-graphql-client";
 import { WebhookMigrationRunner } from "@saleor/webhook-utils";
 
 export const updateWebhooksScript = async ({
@@ -11,8 +9,6 @@ export const updateWebhooksScript = async ({
   authData: AuthData;
   dryRun: boolean;
 }) => {
-  console.log("Working on env: ", authData.saleorApiUrl);
-
   const client = createGraphQLClient({
     saleorApiUrl: authData.saleorApiUrl,
     token: authData.token,
@@ -22,6 +18,7 @@ export const updateWebhooksScript = async ({
     dryRun,
     logger: console,
     client,
+    saleorApiUrl: authData.saleorApiUrl,
     getManifests: async ({ appDetails }) => {
       // Products feed application has currently no webhooks, so we return empty array
       return [];

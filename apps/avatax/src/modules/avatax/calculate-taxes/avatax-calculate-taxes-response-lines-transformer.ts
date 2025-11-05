@@ -37,6 +37,7 @@ export class AvataxCalculateTaxesResponseLinesTransformer {
               tax_rate: 0,
             },
           );
+
           return {
             total_gross_amount: totalAmount,
             total_net_amount: totalAmount,
@@ -44,9 +45,17 @@ export class AvataxCalculateTaxesResponseLinesTransformer {
           };
         }
 
-        const rate = extractIntegerRateFromTaxDetailsRates(
+        let rate = extractIntegerRateFromTaxDetailsRates(
           line.details?.map((details) => details.rate),
         );
+
+        const hasFee = line.details?.some((details) => details.isFee);
+
+        if (hasFee) {
+          this.logger.debug("Product line has a fee. App will report this fee as tax_rate", {
+            details: line.details,
+          });
+        }
 
         const lineTaxCalculated = taxProviderUtils.resolveOptionalOrThrowUnexpectedError(
           line.taxCalculated,
@@ -61,6 +70,18 @@ export class AvataxCalculateTaxesResponseLinesTransformer {
           .toDecimalPlaces(2)
           .toNumber();
 
+        /**
+         * Avalara will return non-zero rate as a standard rate, but
+         * it's possible that there is a tax exemption. So the tax effectively
+         * is zero, but rate is not.
+         *
+         * In this scenario, we reset rate to 0, so Saleor properly apply such rate in further
+         * calculations
+         */
+        if (lineTaxCalculated === 0 || lineTotalNetAmount === 0) {
+          rate = 0;
+        }
+
         this.logger.info(
           "Transforming taxable product line from AvaTax to Saleor CalculateTaxesResponse",
           {
@@ -68,6 +89,8 @@ export class AvataxCalculateTaxesResponseLinesTransformer {
             total_net_amount: lineTotalNetAmount,
             tax_code: line.taxCode,
             tax_rate: rate,
+            line_taxable_amount: line.taxableAmount,
+            line_tax_calculated: line.taxCalculated,
           },
         );
 

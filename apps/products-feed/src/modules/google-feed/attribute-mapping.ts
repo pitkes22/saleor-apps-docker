@@ -1,14 +1,12 @@
-import { GoogleFeedProductVariantFragment } from "../../../generated/graphql";
 import { RootConfig } from "../app-configuration/app-config";
+import { ProductVariant } from "./fetch-product-data";
 
 interface GetMappedAttributesArgs {
-  variant: GoogleFeedProductVariantFragment;
+  variant: ProductVariant;
   attributeMapping?: RootConfig["attributeMapping"];
 }
 
-export const attributeArrayToValueString = (
-  attributes?: GoogleFeedProductVariantFragment["attributes"],
-) => {
+export const attributeArrayToValueString = (attributes?: ProductVariant["attributes"]) => {
   if (!attributes?.length) {
     return;
   }
@@ -64,12 +62,18 @@ export const getMappedAttributes = ({
   );
   const gtinValue = attributeArrayToValueString(gtinAttributes);
 
+  const shippingLabelAttributes = attributes.filter((a) =>
+    mapping.shippingLabelAttributeIds.includes(a.attribute.id),
+  );
+  const shippingLabelValue = attributeArrayToValueString(shippingLabelAttributes);
+
   return {
     material: materialValue,
     brand: brandValue,
     color: colorValue,
     size: sizeValue,
     pattern: patternValue,
+    shipping_label: shippingLabelValue,
     gtin: gtinValue,
   };
 };

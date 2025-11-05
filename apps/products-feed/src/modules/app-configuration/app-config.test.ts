@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import { AppConfig, RootConfig } from "./app-config";
 
 const exampleChannelConfig: RootConfig["channelConfig"] = {
@@ -24,6 +25,7 @@ const exampleAttributeMappingConfig: RootConfig["attributeMapping"] = {
   materialAttributeIds: [],
   sizeAttributeIds: [],
   gtinAttributeIds: [],
+  shippingLabelAttributeIds: [],
 };
 
 const exampleTitleTemplate: RootConfig["titleTemplate"] =
@@ -44,7 +46,7 @@ describe("AppConfig", function () {
     it("Constructs configuration with default values, when empty object is passed as initial data", () => {
       const instance = new AppConfig();
 
-      expect(instance.getRootConfig()).toEqual({
+      expect(instance.getRootConfig()).toStrictEqual({
         channelConfig: {},
         s3: null,
         attributeMapping: {
@@ -54,6 +56,7 @@ describe("AppConfig", function () {
           materialAttributeIds: [],
           sizeAttributeIds: [],
           gtinAttributeIds: [],
+          shippingLabelAttributeIds: [],
         },
         titleTemplate: "{{variant.product.name}} - {{variant.name}}",
         imageSize: 1024,
@@ -63,7 +66,7 @@ describe("AppConfig", function () {
     it("Constructs configuration, when valid initial state is passed", () => {
       const instance = new AppConfig(exampleConfiguration);
 
-      expect(instance.getRootConfig()).toEqual(exampleConfiguration);
+      expect(instance.getRootConfig()).toStrictEqual(exampleConfiguration);
     });
 
     it("Fill attribute mapping, image size and title template with default values, when initial data are lacking those fields", () => {
@@ -78,7 +81,7 @@ describe("AppConfig", function () {
 
       const instance = new AppConfig(configurationWithoutMapping as any); // Casting used to prevent TS from reporting an error
 
-      expect(instance.getRootConfig()).toEqual({
+      expect(instance.getRootConfig()).toStrictEqual({
         ...exampleConfiguration,
         attributeMapping: {
           brandAttributeIds: [],
@@ -87,6 +90,7 @@ describe("AppConfig", function () {
           materialAttributeIds: [],
           sizeAttributeIds: [],
           gtinAttributeIds: [],
+          shippingLabelAttributeIds: [],
         },
         titleTemplate: "{{variant.product.name}} - {{variant.name}}",
         imageSize: 1024,
@@ -119,6 +123,7 @@ describe("AppConfig", function () {
           materialAttributeIds: [],
           sizeAttributeIds: [],
           gtinAttributeIds: [],
+          shippingLabelAttributeIds: [],
         },
         titleTemplate: "{{ variant.name }}",
         imageSize: 1024,
@@ -128,7 +133,7 @@ describe("AppConfig", function () {
 
       const instance2 = AppConfig.parse(serialized);
 
-      expect(instance2.getRootConfig()).toEqual({
+      expect(instance2.getRootConfig()).toStrictEqual({
         s3: {
           region: "region",
           bucketName: "bucket",
@@ -143,6 +148,7 @@ describe("AppConfig", function () {
           materialAttributeIds: [],
           sizeAttributeIds: [],
           gtinAttributeIds: [],
+          shippingLabelAttributeIds: [],
         },
         titleTemplate: "{{ variant.name }}",
         imageSize: 1024,
@@ -173,13 +179,14 @@ describe("AppConfig", function () {
         materialAttributeIds: [],
         sizeAttributeIds: ["size-id"],
         gtinAttributeIds: [],
+        shippingLabelAttributeIds: ["shipping-label-id"],
       },
       titleTemplate: "{{ variant.product.name }} - {{ variant.name }}",
       imageSize: 1024,
     });
 
     it("getRootConfig returns root config data", () => {
-      expect(instance.getRootConfig()).toEqual({
+      expect(instance.getRootConfig()).toStrictEqual({
         s3: {
           region: "region",
           bucketName: "bucket",
@@ -201,6 +208,37 @@ describe("AppConfig", function () {
           materialAttributeIds: [],
           sizeAttributeIds: ["size-id"],
           gtinAttributeIds: [],
+          shippingLabelAttributeIds: ["shipping-label-id"],
+        },
+        titleTemplate: "{{ variant.product.name }} - {{ variant.name }}",
+        imageSize: 1024,
+      });
+    });
+
+    it("getRootConfig returns root config data with shipping label attributes", () => {
+      expect(instance.getRootConfig()).toStrictEqual({
+        s3: {
+          region: "region",
+          bucketName: "bucket",
+          accessKeyId: "access",
+          secretAccessKey: "secret",
+        },
+        channelConfig: {
+          test: {
+            storefrontUrls: {
+              productStorefrontUrl: "https://example.com",
+              storefrontUrl: "https://example.com/p/{{ variant.product.slug }}",
+            },
+          },
+        },
+        attributeMapping: {
+          brandAttributeIds: [],
+          colorAttributeIds: [],
+          patternAttributeIds: [],
+          materialAttributeIds: [],
+          sizeAttributeIds: ["size-id"],
+          gtinAttributeIds: [],
+          shippingLabelAttributeIds: ["shipping-label-id"],
         },
         titleTemplate: "{{ variant.product.name }} - {{ variant.name }}",
         imageSize: 1024,
@@ -208,7 +246,7 @@ describe("AppConfig", function () {
     });
 
     it("getUrlsForChannel gets data for given channel or undefined if doesn't exist", () => {
-      expect(instance.getUrlsForChannel("test")).toEqual({
+      expect(instance.getUrlsForChannel("test")).toStrictEqual({
         productStorefrontUrl: "https://example.com",
         storefrontUrl: "https://example.com/p/{{ variant.product.slug }}",
       });
@@ -217,7 +255,7 @@ describe("AppConfig", function () {
     });
 
     it("getS3Config gets s3 data", () => {
-      expect(instance.getS3Config()).toEqual({
+      expect(instance.getS3Config()).toStrictEqual({
         region: "region",
         bucketName: "bucket",
         accessKeyId: "access",
@@ -226,13 +264,14 @@ describe("AppConfig", function () {
     });
 
     it("getAttributeMapping gets attribute data", () => {
-      expect(instance.getAttributeMapping()).toEqual({
+      expect(instance.getAttributeMapping()).toStrictEqual({
         brandAttributeIds: [],
         colorAttributeIds: [],
         patternAttributeIds: [],
         materialAttributeIds: [],
         sizeAttributeIds: ["size-id"],
         gtinAttributeIds: [],
+        shippingLabelAttributeIds: ["shipping-label-id"],
       });
     });
   });
@@ -248,7 +287,7 @@ describe("AppConfig", function () {
         secretAccessKey: "secret",
       });
 
-      expect(instance.getS3Config()).toEqual({
+      expect(instance.getS3Config()).toStrictEqual({
         region: "region",
         bucketName: "bucket",
         accessKeyId: "access",
@@ -267,7 +306,7 @@ describe("AppConfig", function () {
         storefrontUrl: "https://example.com/p/{{ variant.product.slug }}",
       });
 
-      expect(instance.getUrlsForChannel("test")).toEqual({
+      expect(instance.getUrlsForChannel("test")).toStrictEqual({
         productStorefrontUrl: "https://example.com",
         storefrontUrl: "https://example.com/p/{{ variant.product.slug }}",
       });
@@ -293,7 +332,7 @@ describe("AppConfig", function () {
      * Only way to check if serialization works is to deserialize. Order of serialized fields is not given so string cant be asserted.
      * JSON.parse can be used but its testing implementation details
      */
-    expect(AppConfig.parse(serialized).getS3Config()).toEqual({
+    expect(AppConfig.parse(serialized).getS3Config()).toStrictEqual({
       region: "region",
       bucketName: "bucket",
       accessKeyId: "access",

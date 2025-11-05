@@ -7,7 +7,7 @@ import { ProvidersList } from "./providers-list";
 const Intro = () => {
   return (
     <Section.Description
-      title="Tax providers"
+      title="AvaTax configurations"
       data-testid="providers-intro"
       description={
         <>
@@ -20,7 +20,7 @@ const Intro = () => {
           </Text>
           <Text as="p">
             You can read more about how Saleor deals with taxes in{" "}
-            <TextLink newTab href="https://docs.saleor.io/docs/3.x/developer/taxes">
+            <TextLink newTab href="https://docs.saleor.io/developer/taxes">
               our documentation
             </TextLink>
             .

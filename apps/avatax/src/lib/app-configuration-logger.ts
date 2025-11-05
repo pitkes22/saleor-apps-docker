@@ -1,10 +1,12 @@
-import { ObservabilityAttributes } from "@saleor/apps-otel/src/lib/observability-attributes";
+import { ObservabilityAttributes } from "@saleor/apps-otel/src/observability-attributes";
 
-import { logger } from "../logger";
+import { createLogger } from "../logger";
 import { AppConfig } from "./app-config";
 
 export class AppConfigurationLogger {
-  constructor(private injectedLogger: Pick<typeof logger, "info" | "warn">) {}
+  constructor(
+    private injectedLogger: Pick<ReturnType<typeof createLogger>, "info" | "warn" | "debug">,
+  ) {}
 
   logConfiguration(configuration: AppConfig, channelSlug: string) {
     const config = configuration.getConfigForChannelSlug(channelSlug);
@@ -20,7 +22,7 @@ export class AppConfigurationLogger {
 
     const resolvedAvataxConfig = config.value.avataxConfig;
 
-    this.injectedLogger.info("Received configuration", {
+    this.injectedLogger.debug("Received configuration", {
       [ObservabilityAttributes.CHANNEL_SLUG]: channelSlug,
       /**
        * Be careful changing these values. They are likely used as a metric in Datadog
@@ -29,7 +31,7 @@ export class AppConfigurationLogger {
       appConfigName: resolvedAvataxConfig.config.name,
       shippingTaxCode: resolvedAvataxConfig.config.shippingTaxCode,
       companyCode: resolvedAvataxConfig.config.companyCode,
-      address: JSON.stringify(resolvedAvataxConfig.config.address),
+      address: resolvedAvataxConfig.config.address,
       isSandbox: resolvedAvataxConfig.config.isSandbox,
       isAutocommit: resolvedAvataxConfig.config.isAutocommit,
       isDocumentRecordingEnabled: resolvedAvataxConfig.config.isDocumentRecordingEnabled,

@@ -1,6 +1,5 @@
-import { ProtectedHandlerError } from "@saleor/app-sdk/handlers/next";
-import { verifyJWT } from "@saleor/app-sdk/verify-jwt";
-import { REQUIRED_SALEOR_PERMISSIONS } from "@saleor/apps-shared";
+import { verifyJWT } from "@saleor/app-sdk/auth";
+import { REQUIRED_SALEOR_PERMISSIONS } from "@saleor/apps-shared/permissions";
 import { TRPCError } from "@trpc/server";
 
 import { saleorApp } from "../../../saleor-app";
@@ -17,8 +16,8 @@ const attachAppToken = middleware(async ({ ctx, next }) => {
     logger.debug("ctx.saleorApiUrl not found, throwing");
 
     throw new TRPCError({
-      code: "BAD_REQUEST",
-      message: "Missing saleorApiUrl in request",
+      code: "UNAUTHORIZED",
+      message: "Missing saleorApiUrl in request.",
     });
   }
 
@@ -28,8 +27,9 @@ const attachAppToken = middleware(async ({ ctx, next }) => {
     logger.debug("authData not found, throwing 401");
 
     throw new TRPCError({
-      code: "UNAUTHORIZED",
-      message: "Missing auth data",
+      code: "INTERNAL_SERVER_ERROR",
+      message:
+        "Missing auth data. App installation might be broken, or APL might have have deleted this app installation.",
     });
   }
 
@@ -52,23 +52,22 @@ const validateClientToken = middleware(async ({ ctx, next, meta }) => {
 
   if (!ctx.token) {
     throw new TRPCError({
-      code: "INTERNAL_SERVER_ERROR",
-      message: "Missing token in request. This middleware can be used only in frontend",
+      code: "BAD_REQUEST",
+      message: "Missing token in request.",
     });
   }
 
   if (!ctx.appId) {
     throw new TRPCError({
-      code: "INTERNAL_SERVER_ERROR",
-      message: "Missing appId in request. This middleware can be used after auth is attached",
+      code: "BAD_REQUEST",
+      message: "Missing appId in request.",
     });
   }
 
   if (!ctx.saleorApiUrl) {
     throw new TRPCError({
-      code: "INTERNAL_SERVER_ERROR",
-      message:
-        "Missing saleorApiUrl in request. This middleware can be used after auth is attached",
+      code: "BAD_REQUEST",
+      message: "Missing saleorApiUrl in request.",
     });
   }
 
@@ -86,9 +85,12 @@ const validateClientToken = middleware(async ({ ctx, next, meta }) => {
         ...(meta?.requiredClientPermissions || []),
       ],
     });
-  } catch (e) {
+  } catch (_e) {
     logger.debug("JWT verification failed, throwing");
-    throw new ProtectedHandlerError("JWT verification failed: ", "JWT_VERIFICATION_FAILED");
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: "JWT verification failed.",
+    });
   }
 
   return next({
@@ -113,7 +115,7 @@ const logErrors = middleware(async ({ next }) => {
   const result = await next();
 
   if (!result.ok) {
-    logger.error(result.error.message, { error: result.error });
+    logger.error(`[TRPC Error] ${result.error.message}`, { error: result.error });
   }
 
   return result;

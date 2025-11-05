@@ -1,6 +1,6 @@
-import { NextWebhookApiHandler } from "@saleor/app-sdk/handlers/next";
+import { NextJsWebhookHandler } from "@saleor/app-sdk/handlers/next";
 import { wrapWithLoggerContext } from "@saleor/apps-logger/node";
-import { withOtel } from "@saleor/apps-otel";
+import { withSpanAttributes } from "@saleor/apps-otel/src/with-span-attributes";
 
 import { ProductVariantBackInStock } from "../../../../../generated/graphql";
 import { createLogger } from "../../../../lib/logger";
@@ -16,7 +16,7 @@ export const config = {
 
 const logger = createLogger("webhookProductVariantBackInStockWebhookHandler");
 
-export const handler: NextWebhookApiHandler<ProductVariantBackInStock> = async (
+export const handler: NextJsWebhookHandler<ProductVariantBackInStock> = async (
   req,
   res,
   context,
@@ -31,6 +31,7 @@ export const handler: NextWebhookApiHandler<ProductVariantBackInStock> = async (
 
   if (!productVariant) {
     logger.error("Webhook did not received expected product data in the payload.");
+
     return res.status(200).end();
   }
 
@@ -41,6 +42,7 @@ export const handler: NextWebhookApiHandler<ProductVariantBackInStock> = async (
       await algoliaClient.updateProductVariant(productVariant);
 
       res.status(200).end();
+
       return;
     } catch (e) {
       logger.error(
@@ -62,9 +64,6 @@ export const handler: NextWebhookApiHandler<ProductVariantBackInStock> = async (
 };
 
 export default wrapWithLoggerContext(
-  withOtel(
-    webhookProductVariantBackInStock.createHandler(handler),
-    "api/webhooks/saleor/product_variant_back_in_stock",
-  ),
+  withSpanAttributes(webhookProductVariantBackInStock.createHandler(handler)),
   loggerContext,
 );

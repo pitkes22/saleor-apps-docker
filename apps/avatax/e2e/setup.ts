@@ -1,16 +1,17 @@
-/* eslint-disable turbo/no-undeclared-env-vars */
-import "./data/functions";
 import "dotenv/config";
+import "./data/functions";
 
 import { request, settings, stash } from "pactum";
 import { beforeAll } from "vitest";
 
+import { envE2e } from "./env-e2e";
+
 beforeAll(() => {
-  const saleorApiUrl = process.env.TEST_SALEOR_API_URL;
+  const saleorApiUrl = envE2e.TEST_SALEOR_API_URL;
 
   const staffCredentials = {
-    email: process.env.E2E_USER_NAME,
-    password: process.env.E2E_USER_PASSWORD,
+    email: envE2e.E2E_USER_NAME,
+    password: envE2e.E2E_USER_PASSWORD,
   };
 
   if (!saleorApiUrl) {
@@ -27,6 +28,10 @@ beforeAll(() => {
     throw new Error("Cannot run tests TEST_SALEOR_API_URL is invalid");
   }
 
+  if (!envE2e.E2E_SALEOR_VERSION) {
+    throw new Error("Cannot run tests E2E_SALEOR_VERSION is not set");
+  }
+
   settings.setRequestDefaultRetryCount(3); // retry up to 3 times by default
   settings.setRequestDefaultRetryDelay(50); // wait 50ms between retries
   settings.setLogLevel("DEBUG");
@@ -41,5 +46,6 @@ beforeAll(() => {
    * This is a timeout for sync webhooks in Saleor
    */
   request.setDefaultTimeout(21_000);
+
   stash.loadData("./e2e/data");
 });

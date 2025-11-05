@@ -1,15 +1,19 @@
 {
   "name": "saleor-apps",
   "version": "0.0.0",
+  "private": true,
+  "license": "(BSD-3-Clause AND CC-BY-4.0)",
+  "type": "module",
   "scripts": {
     "build": "turbo run build",
-    "check-spelling": "cspell **/*.{jsx,tsx,js,ts,md,mdx}",
+    "check-spelling": "cspell '**/*.{jsx,tsx,js,ts,md,mdx}'",
     "check-types": "turbo run check-types",
     "deploy": "turbo run deploy",
     "dev": "turbo run dev",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "format": "prettier --write '**/*.{jsx,tsx,js,ts,md,mdx}'",
     "generate": "turbo run generate",
     "github:release": "pnpm changeset tag && git push --follow-tags",
+    "knip": "knip --config knip.config.ts",
     "lint": "turbo run lint",
     "lint-staged": "lint-staged",
     "lint:fix": "turbo run lint:fix",
@@ -18,57 +22,25 @@
     "prepare": "husky",
     "start": "turbo run start",
     "test": "turbo run test",
-    "knip": "knip"
+    "test:ci": "turbo run test:ci"
   },
   "devDependencies": {
     "@changesets/cli": "^2.26.2",
-    "@opentelemetry/api": "1.7.0",
-    "@opentelemetry/api-logs": "0.46.0",
-    "@opentelemetry/core": "1.19.0",
-    "@opentelemetry/exporter-logs-otlp-http": "0.46.0",
-    "@opentelemetry/exporter-trace-otlp-http": "0.46.0",
-    "@opentelemetry/instrumentation-http": "0.46.0",
-    "@opentelemetry/instrumentation-winston": "0.33.1",
-    "@opentelemetry/resources": "1.18.1",
-    "@opentelemetry/sdk-logs": "0.45.1",
-    "@opentelemetry/sdk-node": "0.45.1",
-    "@opentelemetry/sdk-trace-base": "1.18.1",
-    "@opentelemetry/sdk-trace-node": "1.18.1",
-    "@opentelemetry/semantic-conventions": "1.18.1",
-    "@saleor/app-sdk": "0.50.3",
-    "@sentry/cli": "2.32.1",
-    "@sentry/nextjs": "7.117.0",
-    "@types/node": "20.12.3",
-    "cspell": "^7.2.0",
-    "eslint": "8.57.0",
-    "eslint-config-saleor": "workspace:*",
+    "@cspell/cspell-types": "8.17.5",
+    "@saleor/app-sdk": "catalog:",
+    "cspell": "8.17.5",
     "husky": "9.1.4",
-    "knip": "5.27.2",
-    "lint-staged": "^13.2.3",
-    "next": "14.2.3",
+    "knip": "5.46.2",
+    "lint-staged": "15.5.0",
     "prettier": "3.0.3",
-    "sherif": "0.10.0",
-    "turbo": "1.12.4",
-    "typescript": "5.5.4"
+    "sherif": "1.4.0",
+    "sort-package-json": "3.0.0",
+    "turbo": "2.4.4"
   },
+  "packageManager": "pnpm@10.6.3",
   "engines": {
-    "node": ">=18.17.0 <=20",
-    "pnpm": ">=9"
-  },
-  "lint-staged": {
-    "*.{js,ts,tsx}": "eslint --cache --fix",
-    "*.{ts,tsx,md}": "prettier --write",
-    "*.{ts,tsx,md,js,jsx}": "cspell --no-must-find-files"
-  },
-  "packageManager": "pnpm@9.11.0",
-  "pnpm": {
-    "overrides": {
-      "crypto-js@<4.2.0": ">=4.2.0"
-    },
-    "patchedDependencies": {
-      "@opentelemetry/otlp-transformer@0.45.1": "patches/@opentelemetry__otlp-transformer@0.45.1.patch",
-      "@opentelemetry/otlp-transformer@0.46.0": "patches/@opentelemetry__otlp-transformer@0.46.0.patch"
-    }
-  },
-  "private": true
+    "node": ">=22.0.0 <23.0.0",
+    "npm": ">=10.0.0 <11.0.0",
+    "pnpm": ">=10.0.0 <11.0.0"
+  }
 }

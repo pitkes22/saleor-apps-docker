@@ -1,5 +1,7 @@
 import { DocumentType } from "avatax/lib/enums/DocumentType";
 
+import { loggerContext } from "@/logger-context";
+
 import { CalculateTaxesPayload } from "../../webhooks/payloads/calculate-taxes-payload";
 import { avataxAddressFactory } from "../address-factory";
 import { CreateTransactionArgs } from "../avatax-client";
@@ -16,7 +18,7 @@ export class AvataxCalculateTaxesPayloadTransformer {
     private avataxEntityTypeMatcher: AvataxEntityTypeMatcher,
   ) {}
 
-  private matchDocumentType(config: AvataxConfig): DocumentType {
+  private matchDocumentType(): DocumentType {
     /*
      * * For calculating taxes, we always use DocumentType.SalesOrder because it doesn't cause transaction recording.
      * * The full flow is described here: https://developer.avalara.com/ecommerce-integration-guide/sales-tax-badge/design-document-workflow/should-i-commit/
@@ -29,12 +31,17 @@ export class AvataxCalculateTaxesPayloadTransformer {
   /**
    * https://linear.app/saleor/issue/SHOPX-1313/tech-debt-avatax-refactor-async-transformers
    */
-  async transform(
-    payload: CalculateTaxesPayload,
-    avataxConfig: AvataxConfig,
-    matches: AvataxTaxCodeMatches,
-    discountsStrategy: AutomaticallyDistributedProductLinesDiscountsStrategy,
-  ): Promise<CreateTransactionArgs> {
+  async transform({
+    payload,
+    avataxConfig,
+    matches,
+    discountsStrategy,
+  }: {
+    payload: CalculateTaxesPayload;
+    avataxConfig: AvataxConfig;
+    matches: AvataxTaxCodeMatches;
+    discountsStrategy: AutomaticallyDistributedProductLinesDiscountsStrategy;
+  }): Promise<CreateTransactionArgs> {
     const entityUseCode = await this.avataxEntityTypeMatcher.match(
       payload.taxBase.sourceObject.avataxEntityCode,
     );
@@ -46,9 +53,11 @@ export class AvataxCalculateTaxesPayloadTransformer {
       source: payload.taxBase.sourceObject.__typename,
     });
 
+    loggerContext.set("customerCode", customerCode);
+
     return {
       model: {
-        type: this.matchDocumentType(avataxConfig),
+        type: this.matchDocumentType(),
         entityUseCode,
         customerCode,
         companyCode: avataxConfig.companyCode ?? defaultAvataxConfig.companyCode,
@@ -60,12 +69,12 @@ export class AvataxCalculateTaxesPayloadTransformer {
           shipTo: avataxAddressFactory.fromSaleorAddress(payload.taxBase.address!),
         },
         currencyCode: payload.taxBase.currency,
-        lines: this.avaTaxCalculateTaxesPayloadLinesTransformer.transformWithDiscountType(
-          payload.taxBase,
-          avataxConfig,
+        lines: this.avaTaxCalculateTaxesPayloadLinesTransformer.transform({
+          taxBase: payload.taxBase,
+          config: avataxConfig,
           matches,
           discountsStrategy,
-        ),
+        }),
         date: new Date(),
       },
     };

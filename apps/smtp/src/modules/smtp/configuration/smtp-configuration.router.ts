@@ -1,12 +1,17 @@
 import { TRPCError } from "@trpc/server";
-import Handlebars from "handlebars";
+import { fromThrowable } from "neverthrow";
 import { z } from "zod";
 
+import { BaseError } from "../../../errors";
 import { createLogger } from "../../../logger";
 import { updateChannelsInputSchema } from "../../channels/channel-configuration-schema";
 import { protectedWithConfigurationServices } from "../../trpc/protected-client-procedure-with-services";
 import { router } from "../../trpc/trpc-server";
+import { EmailCompiler } from "../services/email-compiler";
+import { HandlebarsTemplateCompiler } from "../services/handlebars-template-compiler";
+import { HtmlToTextCompiler } from "../services/html-to-text-compiler";
 import { MjmlCompiler } from "../services/mjml-compiler";
+import { TemplateErrorCode, templateErrorCodes } from "../services/template-error-codes";
 import {
   smtpConfigurationIdInputSchema,
   smtpCreateConfigurationInputSchema,
@@ -21,6 +26,16 @@ import {
 import { SmtpConfigurationService } from "./smtp-configuration.service";
 import { smtpDefaultEmptyConfigurations } from "./smtp-default-empty-configurations";
 
+const emailCompiler = new EmailCompiler(
+  new HandlebarsTemplateCompiler(),
+  new HtmlToTextCompiler(),
+  new MjmlCompiler(),
+);
+
+const InvalidPayloadJsonError = BaseError.subclass("InvalidPayloadJsonError", {
+  props: {} as { publicMessage: string; errorCode: TemplateErrorCode },
+});
+
 export const throwTrpcErrorFromConfigurationServiceError = (
   error: typeof SmtpConfigurationService.SmtpConfigurationServiceError | unknown,
 ) => {
@@ -33,20 +48,29 @@ export const throwTrpcErrorFromConfigurationServiceError = (
           code: "NOT_FOUND",
           message: "Configuration not found.",
         });
+
       case SmtpConfigurationService.EventConfigNotFoundError:
         throw new TRPCError({
           code: "NOT_FOUND",
           message: "Event configuration not found.",
         });
+
       case SmtpConfigurationService.CantFetchConfigError:
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Can't fetch configuration.",
         });
+
       case SmtpConfigurationService.WrongSaleorVersionError:
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Feature you are trying to use is not supported in this version of Saleor.",
+        });
+
+      case SmtpConfigurationService.TemplateValidationError:
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: error.message,
         });
     }
   }
@@ -62,6 +86,7 @@ export const smtpConfigurationRouter = router({
     const logger = createLogger("smtpConfigurationRouter", { saleorApiUrl: ctx.saleorApiUrl });
 
     logger.debug("smtpConfigurationRouter.fetch called");
+
     return ctx.smtpConfigurationService.getConfigurationRoot();
   }),
   getConfiguration: protectedWithConfigurationServices
@@ -148,55 +173,65 @@ export const smtpConfigurationRouter = router({
 
       logger.debug(input, "mjmlConfigurationRouter.renderTemplate called");
 
-      let renderedSubject = "";
+      const safeParse = fromThrowable(JSON.parse);
 
-      const payload = JSON.parse(input.payload);
+      const payloadResult = safeParse(input.payload);
+
+      if (payloadResult.isErr()) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Invalid payload JSON",
+          cause: new InvalidPayloadJsonError("Invalid payload JSON", {
+            props: {
+              publicMessage: "Invalid payload JSON",
+              errorCode: templateErrorCodes.INVALID_PAYLOAD_JSON,
+            },
+          }),
+        });
+      }
+
+      const payload = payloadResult.value;
+
+      const validationResult = emailCompiler.validate(
+        input.subject || "",
+        input.template || "",
+        payload,
+      );
+
+      if (validationResult.isErr()) {
+        logger.info("Invalid template provided by user", { error: validationResult.error });
+
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: validationResult.error.message,
+          cause: validationResult.error,
+        });
+      }
+
+      // If validation passes, compile and render
+      let renderedSubject = "";
+      let renderedEmail = "";
 
       if (input.subject) {
-        try {
-          const compiledSubjectTemplate = Handlebars.compile(input.subject);
+        const handlebarsCompiler = new HandlebarsTemplateCompiler();
+        const subjectResult = handlebarsCompiler.compile(input.subject, payload);
 
-          renderedSubject = compiledSubjectTemplate(payload);
-        } catch (e) {
-          logger.error("Error during compile subject template", { error: e });
-          return {
-            renderedSubject: "",
-            renderedEmailBody: "",
-          };
+        if (subjectResult.isOk()) {
+          renderedSubject = subjectResult.value.template;
         }
       }
 
-      let renderedEmail = "";
-      let templatedEmail = "";
-
       if (input.template) {
-        try {
-          const compiledSubjectTemplate = Handlebars.compile(input.template);
+        const handlebarsCompiler = new HandlebarsTemplateCompiler();
+        const templateResult = handlebarsCompiler.compile(input.template, payload);
 
-          templatedEmail = compiledSubjectTemplate(payload);
-        } catch (e) {
-          logger.error("Error during compile template", { error: e });
-          return {
-            renderedSubject: "",
-            renderedEmailBody: "",
-          };
-        }
+        if (templateResult.isOk()) {
+          const mjmlCompiler = new MjmlCompiler();
+          const compilationResult = mjmlCompiler.compile(templateResult.value.template);
 
-        const compilationResult = new MjmlCompiler().compile(templatedEmail);
-
-        if (compilationResult.isOk()) {
-          renderedEmail = compilationResult.value;
-        } else {
-          let cause = "Failed to render template";
-
-          try {
-            cause = compilationResult.error.errors![0]!.message;
-          } catch (e) {}
-
-          throw new TRPCError({
-            code: "BAD_REQUEST",
-            message: cause,
-          });
+          if (compilationResult.isOk()) {
+            renderedEmail = compilationResult.value;
+          }
         }
       }
 

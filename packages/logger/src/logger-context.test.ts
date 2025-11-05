@@ -1,8 +1,10 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+
 import { LoggerContext } from "./logger-context";
 
 describe("LoggerContext", () => {
   it("Wraps context and shares context globally", () => {
+    vi.stubEnv("OTEL_SERVICE_NAME", "logger-context-test-service");
     expect.assertions(1);
 
     const loggerContext = new LoggerContext();
@@ -10,10 +12,11 @@ describe("LoggerContext", () => {
     const assertFunction = () => {
       loggerContext.set("baz", "1");
 
-      expect(loggerContext.getRawContext()).toEqual({
+      expect(loggerContext.getRawContext()).toStrictEqual({
         foo: "bar",
         initialState: "exists",
         baz: "1",
+        project_name: "logger-context-test-service",
       });
     };
 
@@ -23,6 +26,6 @@ describe("LoggerContext", () => {
       assertFunction();
     }
 
-    loggerContext.wrap(() => someExecution(), { initialState: "exists" });
+    loggerContext.wrapNextApiHandler(() => someExecution(), { initialState: "exists" });
   });
 });

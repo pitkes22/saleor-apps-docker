@@ -1,16 +1,9 @@
-import { clientLogsFeatureConfig } from "@/modules/client-logs/client-logs-feature-config";
-import {
-  createLogsDocumentClient,
-  createLogsDynamoClient,
-} from "@/modules/client-logs/dynamo-client";
-import { ClientLogDynamoEntityFactory, LogsTable } from "@/modules/client-logs/dynamo-schema";
-import {
-  DynamoDbLogWriter,
-  ILogWriter,
-  LogWriterContext,
-  NoopLogWriter,
-} from "@/modules/client-logs/log-writer";
+import { env } from "@/env";
+import { BaseError } from "@/error";
+import { ClientLogDynamoEntityFactory, LogsTable } from "@/modules/client-logs/dynamo-logs-table";
+import { DynamoDbLogWriter, ILogWriter, LogWriterContext } from "@/modules/client-logs/log-writer";
 import { LogsRepositoryDynamodb } from "@/modules/client-logs/logs-repository";
+import { createDocumentClient, createDynamoClient } from "@/modules/dynamodb/dynamo-client";
 
 export interface ILogWriterFactory {
   createWriter(context: LogWriterContext): ILogWriter;
@@ -20,30 +13,31 @@ export interface ILogWriterFactory {
  * Depending on static config, create an ILogWriter instance
  */
 export class LogWriterFactory implements ILogWriterFactory {
+  static ErrorCreatingLogWriterError = BaseError.subclass("ErrorCreatingLogWriterError");
+
   private createDynamoDbWriter(context: LogWriterContext): ILogWriter {
-    const dynamoClient = createLogsDynamoClient();
-    const logsTable = LogsTable.create({
-      documentClient: createLogsDocumentClient(dynamoClient),
-      tableName: clientLogsFeatureConfig.dynamoTableName!, // If not set, it will throw earlier
-    });
-    const repository = new LogsRepositoryDynamodb({
-      logsTable,
-      logByCheckoutOrOrderId: ClientLogDynamoEntityFactory.createLogByCheckoutOrOrderId(logsTable),
-      logByDateEntity: ClientLogDynamoEntityFactory.createLogByDate(logsTable),
-    });
+    try {
+      const dynamoClient = createDynamoClient();
+      const logsTable = LogsTable.create({
+        documentClient: createDocumentClient(dynamoClient),
+        tableName: env.DYNAMODB_LOGS_TABLE_NAME,
+      });
+      const repository = new LogsRepositoryDynamodb({
+        logsTable,
+        logByCheckoutOrOrderId:
+          ClientLogDynamoEntityFactory.createLogByCheckoutOrOrderId(logsTable),
+        logByDateEntity: ClientLogDynamoEntityFactory.createLogByDate(logsTable),
+      });
 
-    return new DynamoDbLogWriter(repository, context);
-  }
-
-  private createNoopWriter(): ILogWriter {
-    return new NoopLogWriter();
+      return new DynamoDbLogWriter(repository, context);
+    } catch (e) {
+      throw new LogWriterFactory.ErrorCreatingLogWriterError("Failed to create DynamoDbLogWriter", {
+        cause: e,
+      });
+    }
   }
 
   createWriter(context: LogWriterContext): ILogWriter {
-    if (clientLogsFeatureConfig.isEnabled) {
-      return this.createDynamoDbWriter(context);
-    } else {
-      return this.createNoopWriter();
-    }
+    return this.createDynamoDbWriter(context);
   }
 }

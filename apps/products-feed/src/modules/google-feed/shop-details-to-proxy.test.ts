@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import { shopDetailsToProxy } from "./shop-details-to-proxy";
 
 describe("shopDetailsToProxy", () => {
@@ -8,7 +9,7 @@ describe("shopDetailsToProxy", () => {
         description: "Shop description",
         storefrontUrl: "https://example.com",
         title: "Shop title",
-      })
+      }),
     ).toMatchInlineSnapshot(`
       [
         {
@@ -41,7 +42,7 @@ describe("shopDetailsToProxy", () => {
       shopDetailsToProxy({
         storefrontUrl: "https://example.com",
         title: "Shop title",
-      })
+      }),
     ).toMatchInlineSnapshot(`
       [
         {

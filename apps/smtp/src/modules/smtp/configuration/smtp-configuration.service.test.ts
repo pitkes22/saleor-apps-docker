@@ -1,17 +1,25 @@
-import { describe, expect, it, vi } from "vitest";
-import { SmtpConfigurationService } from "./smtp-configuration.service";
 import { SettingsManager } from "@saleor/app-sdk/settings-manager";
-import { SmtpMetadataManager } from "./smtp-metadata-manager";
-import { SmtpConfig } from "./smtp-config-schema";
-import { FeatureFlagService } from "../../feature-flag-service/feature-flag-service";
-import { Client } from "urql";
 import { okAsync } from "neverthrow";
+import { Client } from "urql";
+import { describe, expect, it, vi } from "vitest";
+
+import { FeatureFlagService } from "../../feature-flag-service/feature-flag-service";
+import { SmtpConfig } from "./smtp-config-schema";
+import { SmtpConfigurationService } from "./smtp-configuration.service";
+import { SmtpMetadataManager } from "./smtp-metadata-manager";
 
 const mockSaleorApiUrl = "https://demo.saleor.io/graphql/";
 
-const emptyConfigRoot: SmtpConfig = {
-  configurations: [],
-};
+// Minimal valid MJML template for testing
+const validMjmlTemplate = `<mjml>
+  <mj-body>
+    <mj-section>
+      <mj-column>
+        <mj-text>Test template</mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>`;
 
 const validConfig: SmtpConfig = {
   configurations: [
@@ -31,73 +39,73 @@ const validConfig: SmtpConfig = {
         {
           active: true,
           eventType: "ORDER_CREATED",
-          template: "template",
+          template: validMjmlTemplate,
           subject: "Order {{ order.number }} has been created!!",
         },
         {
           active: false,
           eventType: "ORDER_FULFILLED",
-          template: "template",
+          template: validMjmlTemplate,
           subject: "Order {{ order.number }} has been fulfilled",
         },
         {
           active: false,
           eventType: "ORDER_CONFIRMED",
-          template: "template",
+          template: validMjmlTemplate,
           subject: "Order {{ order.number }} has been confirmed",
         },
         {
           active: false,
           eventType: "ORDER_CANCELLED",
-          template: "template",
+          template: validMjmlTemplate,
           subject: "Order {{ order.number }} has been cancelled",
         },
         {
           active: false,
           eventType: "ORDER_FULLY_PAID",
-          template: "template",
+          template: validMjmlTemplate,
           subject: "Order {{ order.number }} has been fully paid",
         },
         {
           active: false,
           eventType: "INVOICE_SENT",
-          template: "template",
+          template: validMjmlTemplate,
           subject: "New invoice has been created",
         },
         {
           active: false,
           eventType: "ACCOUNT_CONFIRMATION",
-          template: "template",
+          template: validMjmlTemplate,
           subject: "Account activation",
         },
         {
           active: false,
           eventType: "ACCOUNT_PASSWORD_RESET",
-          template: "template",
+          template: validMjmlTemplate,
           subject: "Password reset request",
         },
         {
           active: false,
           eventType: "ACCOUNT_CHANGE_EMAIL_REQUEST",
-          template: "template",
+          template: validMjmlTemplate,
           subject: "Email change request",
         },
         {
           active: false,
           eventType: "ACCOUNT_CHANGE_EMAIL_CONFIRM",
-          template: "template",
+          template: validMjmlTemplate,
           subject: "Email change confirmation",
         },
         {
           active: false,
           eventType: "ACCOUNT_DELETE",
-          template: "template",
+          template: validMjmlTemplate,
           subject: "Account deletion",
         },
         {
           active: true,
           eventType: "GIFT_CARD_SENT",
-          template: "template",
+          template: validMjmlTemplate,
           subject: "Gift card sent",
         },
       ],
@@ -122,67 +130,67 @@ const validConfig: SmtpConfig = {
         {
           active: true,
           eventType: "ORDER_CREATED",
-          template: "template",
+          template: validMjmlTemplate,
           subject: "Order {{ order.number }} has been created!!",
         },
         {
           active: false,
           eventType: "ORDER_FULFILLED",
-          template: "template",
+          template: validMjmlTemplate,
           subject: "Order {{ order.number }} has been fulfilled",
         },
         {
           active: false,
           eventType: "ORDER_CONFIRMED",
-          template: "template",
+          template: validMjmlTemplate,
           subject: "Order {{ order.number }} has been confirmed",
         },
         {
           active: false,
           eventType: "ORDER_CANCELLED",
-          template: "template",
+          template: validMjmlTemplate,
           subject: "Order {{ order.number }} has been cancelled",
         },
         {
           active: false,
           eventType: "ORDER_FULLY_PAID",
-          template: "template",
+          template: validMjmlTemplate,
           subject: "Order {{ order.number }} has been fully paid",
         },
         {
           active: false,
           eventType: "INVOICE_SENT",
-          template: "template",
+          template: validMjmlTemplate,
           subject: "New invoice has been created",
         },
         {
           active: false,
           eventType: "ACCOUNT_CONFIRMATION",
-          template: "template",
+          template: validMjmlTemplate,
           subject: "Account activation",
         },
         {
           active: false,
           eventType: "ACCOUNT_PASSWORD_RESET",
-          template: "template",
+          template: validMjmlTemplate,
           subject: "Password reset request",
         },
         {
           active: false,
           eventType: "ACCOUNT_CHANGE_EMAIL_REQUEST",
-          template: "template",
+          template: validMjmlTemplate,
           subject: "Email change request",
         },
         {
           active: false,
           eventType: "ACCOUNT_CHANGE_EMAIL_CONFIRM",
-          template: "template",
+          template: validMjmlTemplate,
           subject: "Email change confirmation",
         },
         {
           active: false,
           eventType: "ACCOUNT_DELETE",
-          template: "template",
+          template: validMjmlTemplate,
           subject: "Account deletion",
         },
       ],
@@ -237,7 +245,7 @@ describe("SmtpConfigurationService", function () {
 
       const configuration = await service.getConfigurationRoot();
 
-      expect(configuration._unsafeUnwrap()).toEqual(validConfig);
+      expect(configuration._unsafeUnwrap()).toStrictEqual(validConfig);
       expect(getConfigMock).toBeCalledTimes(1);
 
       // Second call should not trigger API call
@@ -246,6 +254,10 @@ describe("SmtpConfigurationService", function () {
     });
 
     it("The API should not be called when initial data were provided", async () => {
+      const emptyConfigRoot: SmtpConfig = {
+        configurations: [],
+      };
+
       const configurator = new SmtpMetadataManager(
         null as unknown as SettingsManager,
         mockSaleorApiUrl,
@@ -264,13 +276,17 @@ describe("SmtpConfigurationService", function () {
         initialData: { ...validConfig },
       });
 
-      expect((await service.getConfigurationRoot())._unsafeUnwrap()).toEqual(validConfig);
+      expect((await service.getConfigurationRoot())._unsafeUnwrap()).toStrictEqual(validConfig);
 
       expect(getConfigMock).toBeCalledTimes(0);
     });
   });
   describe("setConfigurationRoot", () => {
     it("The API should be called and value cached, when saving the configuration", async () => {
+      const emptyConfigRoot: SmtpConfig = {
+        configurations: [],
+      };
+
       const configurator = new SmtpMetadataManager(
         null as unknown as SettingsManager,
         mockSaleorApiUrl,
@@ -298,11 +314,17 @@ describe("SmtpConfigurationService", function () {
       expect(setConfigMock).toBeCalledWith(validConfig);
 
       // Since data should be cached automatically, no API call should be triggered
-      expect(await service.getConfigurationRoot());
+      const configuration = await service.getConfigurationRoot();
+
+      expect(configuration._unsafeUnwrap()).toStrictEqual(validConfig);
       expect(getConfigMock).toBeCalledTimes(0);
     });
 
     it("Operation should be rejected, when attempting to save event not available according to feature flag", async () => {
+      const emptyConfigRoot: SmtpConfig = {
+        configurations: [],
+      };
+
       const configurator = new SmtpMetadataManager(
         null as unknown as SettingsManager,
         mockSaleorApiUrl,
@@ -347,7 +369,7 @@ describe("SmtpConfigurationService", function () {
 
       expect(
         (await service.getConfiguration({ id: validConfig.configurations[0].id }))._unsafeUnwrap(),
-      ).toEqual(validConfig.configurations[0]);
+      ).toStrictEqual(validConfig.configurations[0]);
     });
 
     it("Throws error when configuration with provided ID does not exist", async () => {
@@ -375,6 +397,10 @@ describe("SmtpConfigurationService", function () {
 
   describe("getConfigurations", () => {
     it("Returns empty list when no configurations", async () => {
+      const initialData: SmtpConfig = {
+        configurations: [],
+      };
+
       const configurator = new SmtpMetadataManager(
         null as unknown as SettingsManager,
         mockSaleorApiUrl,
@@ -386,10 +412,10 @@ describe("SmtpConfigurationService", function () {
           saleorVersion: "3.14.0",
         }),
         metadataManager: configurator,
-        initialData: emptyConfigRoot,
+        initialData,
       });
 
-      expect((await service.getConfigurations())._unsafeUnwrap()).toEqual([]);
+      expect((await service.getConfigurations())._unsafeUnwrap()).toStrictEqual([]);
     });
 
     it("Returns relevant configurations, when filter is passed", async () => {
@@ -408,7 +434,7 @@ describe("SmtpConfigurationService", function () {
       });
 
       // Only the first configuration is active, so only this one should be returned
-      expect((await service.getConfigurations({ active: true }))._unsafeUnwrap()).toEqual([
+      expect((await service.getConfigurations({ active: true }))._unsafeUnwrap()).toStrictEqual([
         validConfig.configurations[0],
       ]);
     });
@@ -416,6 +442,10 @@ describe("SmtpConfigurationService", function () {
 
   describe("createConfiguration", () => {
     it("New configuration should be sent to API, when created", async () => {
+      const emptyConfigRoot: SmtpConfig = {
+        configurations: [],
+      };
+
       const configurator = new SmtpMetadataManager(
         null as unknown as SettingsManager,
         mockSaleorApiUrl,
@@ -443,7 +473,7 @@ describe("SmtpConfigurationService", function () {
         })
       )._unsafeUnwrap();
 
-      expect(newConfiguration.name).toEqual("New configuration");
+      expect(newConfiguration.name).toStrictEqual("New configuration");
       expect(setConfigMock).toBeCalledTimes(1);
     });
   });
@@ -474,7 +504,7 @@ describe("SmtpConfigurationService", function () {
         })
       )._unsafeUnwrap();
 
-      expect(updatedConfiguration.name).toEqual("Updated configuration");
+      expect(updatedConfiguration.name).toStrictEqual("Updated configuration");
       expect(setConfigMock).toBeCalledTimes(1);
 
       const configurationFromCache = (
@@ -484,7 +514,7 @@ describe("SmtpConfigurationService", function () {
       )._unsafeUnwrap();
 
       expect(getConfigMock).toBeCalledTimes(0);
-      expect(configurationFromCache.name).toEqual("Updated configuration");
+      expect(configurationFromCache.name).toStrictEqual("Updated configuration");
     });
 
     it("Error should be thrown, when configuration with given ID does not exist", async () => {
@@ -492,9 +522,6 @@ describe("SmtpConfigurationService", function () {
         null as unknown as SettingsManager,
         mockSaleorApiUrl,
       );
-
-      const setConfigMock = vi.spyOn(configurator, "setConfig").mockReturnValue(okAsync(undefined));
-      const getConfigMock = vi.spyOn(configurator, "getConfig").mockReturnValue(okAsync(undefined));
 
       const service = new SmtpConfigurationService({
         featureFlagService: new FeatureFlagService({
@@ -549,9 +576,7 @@ describe("SmtpConfigurationService", function () {
         SmtpConfigurationService.ConfigNotFoundError,
       );
     });
-  });
 
-  describe("deleteConfiguration", () => {
     it("Error should be thrown, when given ID does not exist", async () => {
       const configurator = new SmtpMetadataManager(
         null as unknown as SettingsManager,
@@ -598,14 +623,14 @@ describe("SmtpConfigurationService", function () {
         initialData: { ...validConfig },
       });
 
-      await expect(
+      expect(
         (
           await service.getEventConfiguration({
             configurationId: validConfig.configurations[0].id,
             eventType: "ORDER_CREATED",
           })
         )._unsafeUnwrap(),
-      ).toEqual(validConfig.configurations[0].events[0]);
+      ).toStrictEqual(validConfig.configurations[0].events[0]);
     });
 
     it("Should throw error, when configuration does not exist", async () => {
@@ -634,7 +659,7 @@ describe("SmtpConfigurationService", function () {
 
       const resultUnsupported = await service.getEventConfiguration({
         configurationId: validConfig.configurations[0].id,
-        // @ts-ignore: Testing invalid event type
+        // @ts-expect-error: Testing invalid event type
         eventType: "unsupported-event",
       });
 
@@ -680,7 +705,7 @@ describe("SmtpConfigurationService", function () {
         })
       )._unsafeUnwrap();
 
-      expect(updatedEventConfiguration.subject).toEqual("Updated subject");
+      expect(updatedEventConfiguration.subject).toStrictEqual("Updated subject");
     });
 
     it("Should throw error, when configuration does not exist", async () => {
@@ -713,6 +738,163 @@ describe("SmtpConfigurationService", function () {
         SmtpConfigurationService.ConfigNotFoundError,
       );
 
+      expect(setConfigMock).toBeCalledTimes(0);
+    });
+
+    it("Should throw TemplateValidationError with errorContext SUBJECT for invalid Handlebars in subject", async () => {
+      const configurator = new SmtpMetadataManager(
+        null as unknown as SettingsManager,
+        mockSaleorApiUrl,
+      );
+
+      const setConfigMock = vi.spyOn(configurator, "setConfig").mockReturnValue(okAsync(undefined));
+
+      const service = new SmtpConfigurationService({
+        featureFlagService: new FeatureFlagService({
+          client: {} as Client,
+          saleorVersion: "3.14.0",
+        }),
+        metadataManager: configurator,
+        initialData: { ...validConfig },
+      });
+
+      const result = await service.updateEventConfiguration({
+        configurationId: validConfig.configurations[0].id,
+        eventType: validConfig.configurations[0].events[0].eventType,
+        eventConfiguration: {
+          ...validConfig.configurations[0].events[0],
+          subject: "Invalid {{#if}}",
+        },
+      });
+
+      expect(result.isErr()).toBe(true);
+      const error = result._unsafeUnwrapErr() as InstanceType<
+        typeof SmtpConfigurationService.TemplateValidationError
+      >;
+
+      expect(error).toBeInstanceOf(SmtpConfigurationService.TemplateValidationError);
+      expect(error.errorContext).toBe("SUBJECT");
+      expect(setConfigMock).toBeCalledTimes(0);
+    });
+
+    it("Should throw TemplateValidationError with errorContext BODY_TEMPLATE for invalid Handlebars in body", async () => {
+      const configurator = new SmtpMetadataManager(
+        null as unknown as SettingsManager,
+        mockSaleorApiUrl,
+      );
+
+      const setConfigMock = vi.spyOn(configurator, "setConfig").mockReturnValue(okAsync(undefined));
+
+      const service = new SmtpConfigurationService({
+        featureFlagService: new FeatureFlagService({
+          client: {} as Client,
+          saleorVersion: "3.14.0",
+        }),
+        metadataManager: configurator,
+        initialData: { ...validConfig },
+      });
+
+      const invalidHandlebarsTemplate = `<mjml>
+  <mj-body>
+    <mj-section>
+      <mj-column>
+        <mj-text>{{#if}}</mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>`;
+
+      const result = await service.updateEventConfiguration({
+        configurationId: validConfig.configurations[0].id,
+        eventType: validConfig.configurations[0].events[0].eventType,
+        eventConfiguration: {
+          ...validConfig.configurations[0].events[0],
+          template: invalidHandlebarsTemplate,
+        },
+      });
+
+      expect(result.isErr()).toBe(true);
+      const error = result._unsafeUnwrapErr() as InstanceType<
+        typeof SmtpConfigurationService.TemplateValidationError
+      >;
+
+      expect(error).toBeInstanceOf(SmtpConfigurationService.TemplateValidationError);
+      expect(error.errorContext).toBe("BODY_TEMPLATE");
+      expect(setConfigMock).toBeCalledTimes(0);
+    });
+
+    it("Should throw TemplateValidationError with errorContext BODY_MJML for invalid MJML", async () => {
+      const configurator = new SmtpMetadataManager(
+        null as unknown as SettingsManager,
+        mockSaleorApiUrl,
+      );
+
+      const setConfigMock = vi.spyOn(configurator, "setConfig").mockReturnValue(okAsync(undefined));
+
+      const service = new SmtpConfigurationService({
+        featureFlagService: new FeatureFlagService({
+          client: {} as Client,
+          saleorVersion: "3.14.0",
+        }),
+        metadataManager: configurator,
+        initialData: { ...validConfig },
+      });
+
+      const invalidMjmlTemplate = `<mjml>
+  <mj-body>
+    <mj-invalid-tag>Test</mj-invalid-tag>
+  </mj-body>
+</mjml>`;
+
+      const result = await service.updateEventConfiguration({
+        configurationId: validConfig.configurations[0].id,
+        eventType: validConfig.configurations[0].events[0].eventType,
+        eventConfiguration: {
+          ...validConfig.configurations[0].events[0],
+          template: invalidMjmlTemplate,
+        },
+      });
+
+      expect(result.isErr()).toBe(true);
+      const error = result._unsafeUnwrapErr() as InstanceType<
+        typeof SmtpConfigurationService.TemplateValidationError
+      >;
+
+      expect(error).toBeInstanceOf(SmtpConfigurationService.TemplateValidationError);
+      expect(error.errorContext).toBe("BODY_MJML");
+      expect(setConfigMock).toBeCalledTimes(0);
+    });
+
+    it("Should throw TemplateValidationError for empty subject", async () => {
+      const configurator = new SmtpMetadataManager(
+        null as unknown as SettingsManager,
+        mockSaleorApiUrl,
+      );
+
+      const setConfigMock = vi.spyOn(configurator, "setConfig").mockReturnValue(okAsync(undefined));
+
+      const service = new SmtpConfigurationService({
+        featureFlagService: new FeatureFlagService({
+          client: {} as Client,
+          saleorVersion: "3.14.0",
+        }),
+        metadataManager: configurator,
+        initialData: { ...validConfig },
+      });
+
+      const result = await service.updateEventConfiguration({
+        configurationId: validConfig.configurations[0].id,
+        eventType: validConfig.configurations[0].events[0].eventType,
+        eventConfiguration: {
+          ...validConfig.configurations[0].events[0],
+          subject: "",
+        },
+      });
+
+      expect(result.isErr()).toBe(true);
+      const error = result._unsafeUnwrapErr();
+
+      expect(error).toBeInstanceOf(SmtpConfigurationService.TemplateValidationError);
       expect(setConfigMock).toBeCalledTimes(0);
     });
   });

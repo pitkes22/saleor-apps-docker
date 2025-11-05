@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
+
 import { getRelatedMedia } from "./get-related-media";
-import { ProductMediaType } from "../../../generated/graphql";
 
 describe("getRelatedMedia", () => {
   it("Returns thumbnail, when set to the product", () => {
@@ -9,7 +9,7 @@ describe("getRelatedMedia", () => {
         productMedia: [
           {
             id: "id-1",
-            type: ProductMediaType.Image,
+            type: "IMAGE",
             url: "http://example.com/1.jpg",
           },
         ],
@@ -39,17 +39,17 @@ describe("getRelatedMedia", () => {
         productMedia: [
           {
             id: "id-1",
-            type: ProductMediaType.Image,
+            type: "IMAGE",
             url: "http://example.com/1.jpg",
           },
           {
             id: "id-2",
-            type: ProductMediaType.Image,
+            type: "IMAGE",
             url: "http://example.com/2.jpg",
           },
           {
             id: "id-3",
-            type: ProductMediaType.Image,
+            type: "IMAGE",
             url: "http://example.com/3.jpg",
           },
         ],
@@ -67,17 +67,17 @@ describe("getRelatedMedia", () => {
         productMedia: [
           {
             id: "id-1",
-            type: ProductMediaType.Image,
+            type: "IMAGE",
             url: "http://example.com/1.jpg",
           },
           {
             id: "id-other-variant",
-            type: ProductMediaType.Image,
+            type: "IMAGE",
             url: "http://example.com/2-other-variant.jpg",
           },
           {
             id: "id-3",
-            type: ProductMediaType.Image,
+            type: "IMAGE",
             url: "http://example.com/3.jpg",
           },
         ],
@@ -86,7 +86,7 @@ describe("getRelatedMedia", () => {
           "variant-2": [
             {
               id: "id-other-variant",
-              type: ProductMediaType.Image,
+              type: "IMAGE",
               url: "http://example.com/2-other-variant.jpg",
             },
           ],
@@ -103,17 +103,17 @@ describe("getRelatedMedia", () => {
         productMedia: [
           {
             id: "id-1",
-            type: ProductMediaType.Image,
+            type: "IMAGE",
             url: "http://example.com/image-1.jpg",
           },
           {
             id: "id-2",
-            type: ProductMediaType.Video,
+            type: "VIDEO",
             url: "http://example.com/video-2.mp4",
           },
           {
             id: "id-3",
-            type: ProductMediaType.Image,
+            type: "IMAGE",
             url: "http://example.com/image-3.jpg",
           },
         ],

@@ -1,6 +1,7 @@
 import { SettingsManager } from "@saleor/app-sdk/settings-manager";
 import { Client } from "urql";
 import { afterEach, describe, expect, it, vi } from "vitest";
+
 import { FeatureFlagService } from "../feature-flag-service/feature-flag-service";
 import { SmtpConfigurationService } from "../smtp/configuration/smtp-configuration.service";
 import { SmtpMetadataManager } from "../smtp/configuration/smtp-metadata-manager";
@@ -20,14 +21,6 @@ describe("syncWebhookStatus", function () {
     featureFlagService: createMockedFeatureFlagService(),
   });
 
-  const createWebhookMock = vi
-    .spyOn(webhookManagementService, "createWebhook")
-    .mockImplementation((_) => Promise.resolve());
-
-  const deleteWebhookMock = vi
-    .spyOn(webhookManagementService, "deleteWebhook")
-    .mockImplementation((_) => Promise.resolve());
-
   const smtpConfigurator = new SmtpMetadataManager(
     null as unknown as SettingsManager,
     mockSaleorApiUrl,
@@ -46,6 +39,14 @@ describe("syncWebhookStatus", function () {
   });
 
   it("No webhook should be created or deleted, when both API and configurations don't use any", async () => {
+    const createWebhookMock = vi
+      .spyOn(webhookManagementService, "createWebhook")
+      .mockImplementation(() => Promise.resolve());
+
+    const deleteWebhookMock = vi
+      .spyOn(webhookManagementService, "deleteWebhook")
+      .mockImplementation(() => Promise.resolve());
+
     vi.spyOn(statusesExports, "getWebhookStatusesFromConfigurations").mockReturnValue({
       invoiceSentWebhook: false,
       notifyWebhook: false,
@@ -83,6 +84,14 @@ describe("syncWebhookStatus", function () {
   });
 
   it("Webhooks should be deleted from API, when configurations no longer use them", async () => {
+    const createWebhookMock = vi
+      .spyOn(webhookManagementService, "createWebhook")
+      .mockImplementation(() => Promise.resolve());
+
+    const deleteWebhookMock = vi
+      .spyOn(webhookManagementService, "deleteWebhook")
+      .mockImplementation(() => Promise.resolve());
+
     vi.spyOn(statusesExports, "getWebhookStatusesFromConfigurations").mockReturnValue({
       invoiceSentWebhook: false,
       notifyWebhook: false,
@@ -120,6 +129,14 @@ describe("syncWebhookStatus", function () {
   });
 
   it("Webhooks should be created using API, when new configurations use them", async () => {
+    const createWebhookMock = vi
+      .spyOn(webhookManagementService, "createWebhook")
+      .mockImplementation(() => Promise.resolve());
+
+    const deleteWebhookMock = vi
+      .spyOn(webhookManagementService, "deleteWebhook")
+      .mockImplementation(() => Promise.resolve());
+
     vi.spyOn(statusesExports, "getWebhookStatusesFromConfigurations").mockReturnValue({
       invoiceSentWebhook: true,
       notifyWebhook: true,

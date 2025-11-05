@@ -1,8 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { GoogleFeedProductVariantFragment } from "../../../generated/graphql";
-import { attributeArrayToValueString, getMappedAttributes } from "./attribute-mapping";
 
-const productBase: GoogleFeedProductVariantFragment["product"] = {
+import { attributeArrayToValueString, getMappedAttributes } from "./attribute-mapping";
+import { ProductVariant } from "./fetch-product-data";
+
+const productBase: ProductVariant["product"] = {
   name: "Product",
   __typename: "Product",
   id: "product-id",
@@ -47,7 +48,7 @@ const productBase: GoogleFeedProductVariantFragment["product"] = {
   ],
 };
 
-const priceBase: GoogleFeedProductVariantFragment["pricing"] = {
+const priceBase: ProductVariant["pricing"] = {
   __typename: "VariantPricingInfo",
   price: {
     __typename: "TaxedMoney",
@@ -157,6 +158,7 @@ describe("attribute-mapping", () => {
             materialAttributeIds: ["material-id"],
             sizeAttributeIds: ["size-id"],
             gtinAttributeIds: ["gtin-id"],
+            shippingLabelAttributeIds: ["shipping-label-id"],
           },
         }),
       ).toStrictEqual({
@@ -166,6 +168,7 @@ describe("attribute-mapping", () => {
         brand: undefined,
         pattern: undefined,
         gtin: undefined,
+        shipping_label: undefined,
       });
     });
 
@@ -270,6 +273,7 @@ describe("attribute-mapping", () => {
             sizeAttributeIds: ["size-id"],
             patternAttributeIds: ["pattern-id"],
             gtinAttributeIds: ["gtin-id"],
+            shippingLabelAttributeIds: ["shipping-label-id"],
           },
         }),
       ).toStrictEqual({
@@ -279,6 +283,7 @@ describe("attribute-mapping", () => {
         brand: "Saleor",
         pattern: "Plain",
         gtin: "01234500001-0",
+        shipping_label: undefined,
       });
     });
   });

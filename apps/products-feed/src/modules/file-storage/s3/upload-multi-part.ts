@@ -4,9 +4,10 @@ import {
   CreateMultipartUploadCommand,
   UploadPartCommand,
 } from "@aws-sdk/client-s3";
-import { UploadFileArgs } from "./upload-file";
-import { MULTI_PART_SIZE_THRESHOLD } from "./const";
+
 import { createLogger } from "../../../logger";
+import { MULTI_PART_SIZE_THRESHOLD } from "./const";
+import { UploadFileArgs } from "./upload-file";
 
 /*
  * Code based on S3 docs:
@@ -60,6 +61,7 @@ export const UploadMultiPart = async ({
           )
           .then((d) => {
             logger.trace(`Part ${i + 1}/${numberOfParts} uploaded`);
+
             return d;
           }),
       );

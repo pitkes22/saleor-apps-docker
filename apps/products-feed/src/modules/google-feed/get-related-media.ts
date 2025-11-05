@@ -1,4 +1,5 @@
-import { GoogleFeedProductVariantFragment, ProductMediaType } from "../../../generated/graphql";
+import { ProductMediaType } from "../../../generated/graphql";
+import { ProductVariant } from "./fetch-product-data";
 
 type Media = {
   id: string;
@@ -22,19 +23,18 @@ export const getRelatedMedia = ({
   variantMediaMap,
   productMedia,
 }: getRelatedMediaArgs) => {
-  // Saleor always uses the first photo as thumbnail - even if it's assigned to the variant
-  const productThumbnailUrl = productMedia[0]?.url;
-
   const mediaAssignedToAnyVariant = Object.values(variantMediaMap).flat() || [];
 
   const mediaAssignedToNoVariant =
     productMedia?.filter((m) => !mediaAssignedToAnyVariant.find((vm) => vm.id === m.id)) || [];
 
   const mediaAssignedToVariant = variantMediaMap[productVariantId] || [];
+  // Saleor always uses the first photo as thumbnail - even if it's assigned to the variant
+  const productThumbnailUrl = mediaAssignedToVariant[0]?.url || productMedia[0]?.url;
 
   const additionalImages =
     [...mediaAssignedToVariant, ...mediaAssignedToNoVariant]
-      ?.filter((media) => media.type === ProductMediaType.Image) // Videos are not supported by the field
+      ?.filter((media) => media.type === "IMAGE") // Videos are not supported by the field
       .map((media) => media.url)
       .filter((url) => url !== productThumbnailUrl) || []; // Exclude image used as thumbnail
 
@@ -45,7 +45,7 @@ export const getRelatedMedia = ({
 };
 
 interface GetVariantMediaMapArgs {
-  variant: GoogleFeedProductVariantFragment;
+  variant: ProductVariant;
 }
 
 export const getVariantMediaMap = ({ variant }: GetVariantMediaMapArgs) => {
@@ -57,6 +57,7 @@ export const getVariantMediaMap = ({ variant }: GetVariantMediaMapArgs) => {
         return accumulator;
       }
       accumulator[id] = currentValue.media?.filter((m) => !!m) || [];
+
       return accumulator;
     }, {}) || {}
   );

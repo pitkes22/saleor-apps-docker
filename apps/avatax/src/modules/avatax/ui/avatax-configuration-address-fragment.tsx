@@ -1,4 +1,4 @@
-import { useDashboardNotification } from "@saleor/apps-shared";
+import { useDashboardNotification } from "@saleor/apps-shared/use-dashboard-notification";
 import { Box, Button, Text } from "@saleor/macaw-ui";
 import { Input } from "@saleor/react-hook-form-macaw";
 import { AddressResolutionModel } from "avatax/lib/models/AddressResolutionModel";
@@ -157,7 +157,7 @@ export const AvataxConfigurationAddressFragment = (
             control={control}
             disabled={disabled}
             name="address.zip"
-            label="Zip"
+            label="Zip Code"
             helperText={formState.errors.address?.zip?.message}
           />
           {suggestions?.zip && <FieldSuggestion suggestion={suggestions.zip} />}

@@ -1,9 +1,11 @@
 import Algoliasearch, { SearchClient } from "algoliasearch";
+
 import {
   ProductVariantWebhookPayloadFragment,
   ProductWebhookPayloadFragment,
 } from "../../../generated/graphql";
 import { isNotNil } from "../isNotNil";
+import { createLogger } from "../logger";
 import { SearchProvider } from "../searchProvider";
 import {
   AlgoliaObject,
@@ -11,7 +13,6 @@ import {
   productAndVariantToAlgolia,
   productAndVariantToObjectID,
 } from "./algoliaUtils";
-import { createLogger } from "../logger";
 
 export interface AlgoliaSearchProviderOptions {
   appId: string;
@@ -36,7 +37,7 @@ export class AlgoliaSearchProvider implements SearchProvider {
     channels,
     enabledKeys,
   }: AlgoliaSearchProviderOptions) {
-    this.#algolia = Algoliasearch(appId, apiKey);
+    this.#algolia = Algoliasearch(appId, apiKey); // cspell:disable-line
     this.#indexNamePrefix = indexNamePrefix;
     this.#indexNames =
       channels?.map((c) => channelListingToAlgoliaIndexId({ channel: c }, this.#indexNamePrefix)) ||
@@ -46,6 +47,7 @@ export class AlgoliaSearchProvider implements SearchProvider {
 
   private async saveGroupedByIndex(groupedByIndex: GroupedByIndex) {
     logger.debug("saveGroupedByIndex called");
+
     return Promise.all(
       Object.entries(groupedByIndex).map(([indexName, objects]) => {
         const index = this.#algolia.initIndex(indexName);
@@ -127,6 +129,7 @@ export class AlgoliaSearchProvider implements SearchProvider {
 
     if (!product.variants) {
       logger.debug("Product has no variants - abort");
+
       return;
     }
     await Promise.all(product.variants.map((variant) => this.updateProductVariant(variant)));
@@ -146,6 +149,7 @@ export class AlgoliaSearchProvider implements SearchProvider {
 
   async createProductVariant(productVariant: ProductVariantWebhookPayloadFragment) {
     logger.debug(`createProductVariant called`);
+
     return this.updateProductVariant(productVariant);
   }
 
@@ -209,6 +213,7 @@ const groupVariantByIndexName = (
   logger.debug("Grouping variants per index name");
   if (!productVariant.channelListings) {
     logger.debug("Product variant has no channel listings - abort");
+
     return {};
   }
 
@@ -224,6 +229,7 @@ const groupVariantByIndexName = (
           var: channelListing,
           prod: productChannelListing,
         });
+
         return false;
       }
 
@@ -247,6 +253,7 @@ const groupVariantByIndexName = (
     .reduce((acc, { object, indexName }) => {
       acc[indexName] = acc[indexName] ?? [];
       acc[indexName].push(object);
+
       return acc;
     }, {} as GroupedByIndex);
 

@@ -6,7 +6,11 @@ import { AvataxCalculateTaxesPayloadLinesTransformer } from "@/modules/avatax/ca
 import { AvataxCalculateTaxesResponseTransformer } from "@/modules/avatax/calculate-taxes/avatax-calculate-taxes-response-transformer";
 import { AvataxCalculateTaxesTaxCodeMatcher } from "@/modules/avatax/calculate-taxes/avatax-calculate-taxes-tax-code-matcher";
 import { SHIPPING_ITEM_CODE } from "@/modules/avatax/calculate-taxes/avatax-shipping-line";
-import { ILogWriter, LogWriterContext, NoopLogWriter } from "@/modules/client-logs/log-writer";
+import { ILogWriter, NoopLogWriter } from "@/modules/client-logs/log-writer";
+import {
+  AvataxGetTaxSystemError,
+  AvataxGetTaxWrongUserInputError,
+} from "@/modules/taxes/tax-error";
 
 import { BaseError } from "../../../error";
 import { AppConfig } from "../../../lib/app-config";
@@ -16,7 +20,7 @@ import { AvataxSdkClientFactory } from "../../avatax/avatax-sdk-client-factory";
 import { CalculateTaxesPayload } from "../../webhooks/payloads/calculate-taxes-payload";
 import { CalculateTaxesUseCase } from "./calculate-taxes.use-case";
 
-const mockGetAppConfig = vi.fn<never, Result<AppConfig, (typeof BaseError)["prototype"]>>();
+const mockGetAppConfig = vi.fn<() => Result<AppConfig, (typeof BaseError)["prototype"]>>();
 
 const MockConfigExtractor: IAppConfigExtractor = {
   extractAppConfigFromPrivateMetadata: mockGetAppConfig,
@@ -39,6 +43,7 @@ const getBasePayload = (): CalculateTaxesPayload => {
     taxBase: {
       channel: {
         slug: channelSlug,
+        id: "channel-id",
       },
       discounts: [],
       currency: "PLN",
@@ -66,6 +71,7 @@ const getBasePayload = (): CalculateTaxesPayload => {
             orderProductVariant: {
               __typename: "ProductVariant",
               id: "123",
+              sku: "variantSku",
               product: {
                 taxClass: {
                   id: "321",
@@ -143,6 +149,7 @@ const getMockedAppConfig = (): AppConfig => {
 
 describe("CalculateTaxesUseCase", () => {
   let instance: CalculateTaxesUseCase;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let mockedAvataxClient: any;
   let logWriter: ILogWriter;
 
@@ -175,7 +182,7 @@ describe("CalculateTaxesUseCase", () => {
     instance = new CalculateTaxesUseCase({
       configExtractor: MockConfigExtractor,
       logWriterFactory: {
-        createWriter(context: LogWriterContext): ILogWriter {
+        createWriter(): ILogWriter {
           return logWriter;
         },
       },
@@ -221,6 +228,10 @@ describe("CalculateTaxesUseCase", () => {
   it("Returns XXX error if taxes calculation fails", async () => {
     mockGetAppConfig.mockImplementationOnce(() => ok(getMockedAppConfig()));
 
+    mockedAvataxClient.createTransaction.mockResolvedValueOnce(
+      Promise.resolve(err(new Error("Failed to create transaction"))),
+    );
+
     const payload = getBasePayload();
 
     const result = await instance.calculateTaxes(payload, getMockAuthData());
@@ -228,14 +239,17 @@ describe("CalculateTaxesUseCase", () => {
     const error = result._unsafeUnwrapErr();
 
     expect(error).toBeInstanceOf(CalculateTaxesUseCase.FailedCalculatingTaxesError);
-    // Expect any error to be attached. We dont yet specify errors so these tests will be added later
-    expect(error.errors![0]).toBeInstanceOf(Error);
+
+    expect(error).toMatchInlineSnapshot(`
+      [FailedCalculatingTaxesError: Failed to create transaction
+      Failed to calculate taxes]
+    `);
   });
 
   it("Calculates proper discount (extra field with sum of SUBTOTAL-type amounts) and properly reduces price of shipping line", async () => {
     mockGetAppConfig.mockImplementationOnce(() => ok(getMockedAppConfig()));
 
-    mockedAvataxClient.createTransaction.mockResolvedValueOnce({ lines: [] });
+    mockedAvataxClient.createTransaction.mockResolvedValueOnce(Promise.resolve(ok({ lines: [] })));
 
     const payload = getPayloadWithDiscounts();
 
@@ -264,7 +278,7 @@ describe("CalculateTaxesUseCase", () => {
   it("Writes successful log if taxes calculated to Log Writer", async () => {
     mockGetAppConfig.mockImplementationOnce(() => ok(getMockedAppConfig()));
 
-    mockedAvataxClient.createTransaction.mockResolvedValueOnce({ lines: [] });
+    mockedAvataxClient.createTransaction.mockResolvedValueOnce(Promise.resolve(ok({ lines: [] })));
 
     const payload = getPayloadWithDiscounts();
 
@@ -272,7 +286,7 @@ describe("CalculateTaxesUseCase", () => {
 
     expect(logWriter.writeLog).toHaveBeenCalledWith({
       log: expect.objectContaining({
-        message: "Taxes calculated",
+        message: "Sucessfully calculated taxes",
       }),
     });
   });
@@ -286,8 +300,89 @@ describe("CalculateTaxesUseCase", () => {
 
     expect(logWriter.writeLog).toHaveBeenCalledWith({
       log: expect.objectContaining({
-        message: "Failed to calculate taxes. Invalid config",
+        message: "Error during tax calculation",
       }),
+    });
+  });
+
+  describe("User error handling", () => {
+    it("Returns HTTP 400 when AvaTax API throws error caused by user", async () => {
+      mockGetAppConfig.mockImplementationOnce(() => ok(getMockedAppConfig()));
+
+      // Create AvataxUserInputError for InvalidZipForStateError
+      const userInputError = new AvataxGetTaxWrongUserInputError("GetTaxError", {
+        props: {
+          faultSubCode: "InvalidZipForStateError",
+          description:
+            "The provided address contains a postal code and state combination that is not valid.",
+          message: "Tax calculation cannot be determined. Zip is not valid for the state.",
+        },
+      });
+
+      // Mock AvaTax API to throw user input error
+      mockedAvataxClient.createTransaction.mockRejectedValueOnce(userInputError);
+
+      const result = await instance.calculateTaxes(getBasePayload(), getMockAuthData());
+
+      expect(result._unsafeUnwrapErr()).toBeInstanceOf(
+        CalculateTaxesUseCase.ExpectedIncompletePayloadError,
+      );
+
+      expect(result._unsafeUnwrapErr()).toMatchInlineSnapshot(`
+        [ExpectedIncompletePayloadError: AvataxGetTaxWrongInputError: GetTaxError
+        Payload is incomplete and taxes cant be calculated. This is expected]
+      `);
+    });
+
+    it("Returns HTTP 500 when AvaTax API throws other errors", async () => {
+      mockGetAppConfig.mockImplementationOnce(() => ok(getMockedAppConfig()));
+
+      // Create AvataxSystemError for unknown system fault
+      const systemError = new AvataxGetTaxSystemError("GetTaxError", {
+        props: {
+          faultSubCode: "UnknownSystemError",
+          description: "Some system error that is not user-caused",
+          message: "System error that should return HTTP 500",
+        },
+      });
+
+      // Mock AvaTax API to throw system error
+      mockedAvataxClient.createTransaction.mockRejectedValueOnce(systemError);
+
+      const result = await instance.calculateTaxes(getBasePayload(), getMockAuthData());
+
+      expect(result._unsafeUnwrapErr()).toBeInstanceOf(
+        CalculateTaxesUseCase.FailedCalculatingTaxesError,
+      );
+
+      expect(result._unsafeUnwrapErr()).toMatchInlineSnapshot(`
+        [FailedCalculatingTaxesError: AvataxGetTaxSystemError: GetTaxError
+        Failed to calculate taxes]
+      `);
+    });
+
+    it("Does not log exceptions caused by user input errors as error or warning level", async () => {
+      mockGetAppConfig.mockImplementationOnce(() => ok(getMockedAppConfig()));
+
+      // Create AvataxUserInputError for InvalidZipForStateError
+      const userInputError = new AvataxGetTaxWrongUserInputError("GetTaxError", {
+        props: {
+          faultSubCode: "InvalidZipForStateError",
+          description:
+            "The provided address contains a postal code and state combination that is not valid.",
+          message: "Tax calculation cannot be determined. Zip is not valid for the state.",
+        },
+      });
+
+      mockedAvataxClient.createTransaction.mockRejectedValueOnce(userInputError);
+
+      const loggerErrorSpy = vi.spyOn(instance["logger"], "error");
+      const loggerWarnSpy = vi.spyOn(instance["logger"], "warn");
+
+      await instance.calculateTaxes(getBasePayload(), getMockAuthData());
+
+      expect(loggerErrorSpy).not.toHaveBeenCalled();
+      expect(loggerWarnSpy).not.toHaveBeenCalled();
     });
   });
 });

@@ -1,8 +1,8 @@
+import { Client } from "urql";
 import { afterEach, describe, expect, it, vi } from "vitest";
+
 import { FeatureFlagService } from "./feature-flag-service";
 import * as fetchSaleorVersionExports from "./fetch-saleor-version";
-
-import { Client } from "urql";
 
 describe("FeatureFlagService", function () {
   const createMockedClient = () => ({}) as Client;
@@ -23,7 +23,7 @@ describe("FeatureFlagService", function () {
       .spyOn(fetchSaleorVersionExports, "fetchSaleorVersion")
       .mockResolvedValue("XXXX");
 
-    expect(await service.getSaleorVersion()).toEqual(passedVersion);
+    expect(await service.getSaleorVersion()).toStrictEqual(passedVersion);
     expect(versionFetchSpy).not.toHaveBeenCalled();
   });
 
@@ -38,11 +38,11 @@ describe("FeatureFlagService", function () {
       .spyOn(fetchSaleorVersionExports, "fetchSaleorVersion")
       .mockResolvedValue(fetchedVersion);
 
-    expect(await service.getSaleorVersion()).toEqual(fetchedVersion);
+    expect(await service.getSaleorVersion()).toStrictEqual(fetchedVersion);
     expect(versionFetchSpy).toHaveBeenCalledOnce();
 
     // Request version once again - should be cached
-    expect(await service.getSaleorVersion()).toEqual(fetchedVersion);
+    expect(await service.getSaleorVersion()).toStrictEqual(fetchedVersion);
     expect(versionFetchSpy).toHaveBeenCalledOnce();
   });
 });

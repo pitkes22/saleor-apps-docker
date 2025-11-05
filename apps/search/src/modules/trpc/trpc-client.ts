@@ -1,10 +1,10 @@
+import { SALEOR_API_URL_HEADER, SALEOR_AUTHORIZATION_BEARER_HEADER } from "@saleor/app-sdk/headers";
 import { httpBatchLink } from "@trpc/client";
 import { createTRPCNext } from "@trpc/next";
 
-import { SALEOR_API_URL_HEADER, SALEOR_AUTHORIZATION_BEARER_HEADER } from "@saleor/app-sdk/const";
-
-import { AppRouter } from "./trpc-app-router";
+import { createLogger } from "../../lib/logger";
 import { appBridgeInstance } from "../../pages/_app";
+import { AppRouter } from "./trpc-app-router";
 
 function getBaseUrl() {
   if (typeof window !== "undefined") return "";
@@ -12,6 +12,8 @@ function getBaseUrl() {
 
   return `http://localhost:${process.env.PORT ?? 3000}`;
 }
+
+const logger = createLogger("trpc-client");
 
 export const trpcClient = createTRPCNext<AppRouter>({
   config({ ctx }) {
@@ -23,11 +25,12 @@ export const trpcClient = createTRPCNext<AppRouter>({
             const { token, saleorApiUrl } = appBridgeInstance?.getState() || {};
 
             if (!token || !saleorApiUrl) {
-              console.error(
+              logger.error(
                 "Can't initialize tRPC client before establishing the App Bridge connection",
               );
               throw new Error("Token and Saleor API URL unknown");
             }
+
             return {
               /**
                * Attach headers from app to client requests, so tRPC can add them to context

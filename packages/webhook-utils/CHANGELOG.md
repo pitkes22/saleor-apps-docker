@@ -1,5 +1,41 @@
 # @saleor/webhook-utils
 
+## 0.2.5
+
+### Patch Changes
+
+- da9899d5: Cleanup deps, peerDeps & devDependencies for package
+
+## 0.2.4
+
+### Patch Changes
+
+- 996d9be1: Use [PNPM catalogs](https://pnpm.io/catalogs) feature to ensure that dependencies are in sync between different packages in monorepo.
+
+## 0.2.3
+
+### Patch Changes
+
+- 9bbf9ee5: Fixed autofixable linting issues. No functional changes.
+
+## 0.2.2
+
+### Patch Changes
+
+- 83ad6531: Updated Node.js to 22.11
+
+## 0.2.1
+
+### Patch Changes
+
+- 69992d56: Update modern-errors-serialize library so it supports excluding error property from serialization
+
+## 0.2.0
+
+### Minor Changes
+
+- 2f37f075: Improved error handling of `WebhookMigrationRunner`. Now this class will throw unknown errors that later can be logged to Sentry in respective app.
+
 ## 0.1.4
 
 ### Patch Changes

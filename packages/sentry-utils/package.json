@@ -1,20 +1,23 @@
 {
   "name": "@saleor/sentry-utils",
-  "version": "0.2.3",
-  "scripts": {
-    "check-types": "tsc --noEmit",
-    "lint": "eslint .",
-    "lint:fix": "eslint --fix ."
-  },
-  "devDependencies": {
-    "eslint-config-saleor": "workspace:*",
-    "typescript": "5.5.4"
-  },
+  "version": "0.2.4",
+  "type": "module",
   "exports": {
     ".": {
       "default": "./index.ts"
     }
   },
   "main": "index.ts",
-  "type": "module"
+  "scripts": {
+    "check-types": "tsc",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix ."
+  },
+  "devDependencies": {
+    "@saleor/eslint-config-apps": "workspace:*",
+    "@saleor/typescript-config-apps": "workspace:*",
+    "@types/node": "catalog:",
+    "eslint": "catalog:",
+    "typescript": "5.8.2"
+  }
 }

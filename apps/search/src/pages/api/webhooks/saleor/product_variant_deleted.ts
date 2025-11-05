@@ -1,6 +1,6 @@
-import { NextWebhookApiHandler } from "@saleor/app-sdk/handlers/next";
+import { NextJsWebhookHandler } from "@saleor/app-sdk/handlers/next";
 import { wrapWithLoggerContext } from "@saleor/apps-logger/node";
-import { withOtel } from "@saleor/apps-otel";
+import { withSpanAttributes } from "@saleor/apps-otel/src/with-span-attributes";
 
 import { ProductVariantDeleted } from "../../../../../generated/graphql";
 import { createLogger } from "../../../../lib/logger";
@@ -16,7 +16,7 @@ export const config = {
 
 const logger = createLogger("webhookProductVariantDeletedWebhookHandler");
 
-export const handler: NextWebhookApiHandler<ProductVariantDeleted> = async (req, res, context) => {
+export const handler: NextJsWebhookHandler<ProductVariantDeleted> = async (req, res, context) => {
   const { event, authData } = context;
 
   logger.info(`New event received: ${event} (${context.payload?.__typename})`, {
@@ -27,6 +27,7 @@ export const handler: NextWebhookApiHandler<ProductVariantDeleted> = async (req,
 
   if (!productVariant) {
     logger.error("Webhook did not received expected product data in the payload.");
+
     return res.status(200).end();
   }
 
@@ -37,6 +38,7 @@ export const handler: NextWebhookApiHandler<ProductVariantDeleted> = async (req,
       await algoliaClient.deleteProductVariant(productVariant);
 
       res.status(200).end();
+
       return;
     } catch (e) {
       logger.error(
@@ -58,9 +60,6 @@ export const handler: NextWebhookApiHandler<ProductVariantDeleted> = async (req,
 };
 
 export default wrapWithLoggerContext(
-  withOtel(
-    webhookProductVariantDeleted.createHandler(handler),
-    "api/webhooks/saleor/product_variant_deleted",
-  ),
+  withSpanAttributes(webhookProductVariantDeleted.createHandler(handler)),
   loggerContext,
 );

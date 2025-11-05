@@ -1,4 +1,4 @@
-import { describe, expect, it, test } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { AvataxCalculateTaxesTaxCodeMatcher } from "@/modules/avatax/calculate-taxes/avatax-calculate-taxes-tax-code-matcher";
 
@@ -21,18 +21,19 @@ describe("AvataxCalculateTaxesPayloadLinesTransformer", () => {
       const taxBaseMock = mockGenerator.generateTaxBase();
       const matchesMock = mockGenerator.generateTaxCodeMatches();
 
-      const lines = transformer.transformWithDiscountType(
-        taxBaseMock,
-        avataxConfigMock,
-        matchesMock,
+      const lines = transformer.transform({
+        taxBase: taxBaseMock,
+        config: avataxConfigMock,
+        matches: matchesMock,
         discountsStrategy,
-      );
+      });
 
-      expect(lines).toEqual([
+      expect(lines).toStrictEqual([
         {
           amount: 60,
           quantity: 3,
           taxCode: DEFAULT_TAX_CLASS_ID,
+          itemCode: expect.any(String),
           taxIncluded: true,
           discounted: false,
         },
@@ -40,6 +41,7 @@ describe("AvataxCalculateTaxesPayloadLinesTransformer", () => {
           amount: 20,
           quantity: 1,
           taxCode: DEFAULT_TAX_CLASS_ID,
+          itemCode: expect.any(String),
           taxIncluded: true,
           discounted: false,
         },
@@ -47,6 +49,7 @@ describe("AvataxCalculateTaxesPayloadLinesTransformer", () => {
           amount: 100,
           quantity: 2,
           taxCode: DEFAULT_TAX_CLASS_ID,
+          itemCode: expect.any(String),
           taxIncluded: true,
           discounted: false,
         },
@@ -66,18 +69,19 @@ describe("AvataxCalculateTaxesPayloadLinesTransformer", () => {
       const matchesMock = mockGenerator.generateTaxCodeMatches();
       const taxBaseMock = mockGenerator.generateTaxBase({ shippingPrice: { amount: 0 } });
 
-      const lines = transformer.transformWithDiscountType(
-        taxBaseMock,
-        avataxConfigMock,
-        matchesMock,
+      const lines = transformer.transform({
+        taxBase: taxBaseMock,
+        config: avataxConfigMock,
+        matches: matchesMock,
         discountsStrategy,
-      );
+      });
 
-      expect(lines).toEqual([
+      expect(lines).toStrictEqual([
         {
           amount: 60,
           quantity: 3,
           taxCode: DEFAULT_TAX_CLASS_ID,
+          itemCode: expect.any(String),
           taxIncluded: true,
           discounted: false,
         },
@@ -85,6 +89,7 @@ describe("AvataxCalculateTaxesPayloadLinesTransformer", () => {
           amount: 20,
           quantity: 1,
           taxCode: DEFAULT_TAX_CLASS_ID,
+          itemCode: expect.any(String),
           taxIncluded: true,
           discounted: false,
         },
@@ -92,6 +97,7 @@ describe("AvataxCalculateTaxesPayloadLinesTransformer", () => {
           amount: 100,
           quantity: 2,
           taxCode: DEFAULT_TAX_CLASS_ID,
+          itemCode: expect.any(String),
           taxIncluded: true,
           discounted: false,
         },
@@ -102,18 +108,19 @@ describe("AvataxCalculateTaxesPayloadLinesTransformer", () => {
       const avataxConfigMock = mockGenerator.generateAvataxConfig();
       const taxBaseMock = mockGenerator.generateTaxBase();
       const matchesMock = mockGenerator.generateTaxCodeMatches();
-      const lines = transformer.transformWithDiscountType(
-        taxBaseMock,
-        avataxConfigMock,
-        matchesMock,
+      const lines = transformer.transform({
+        taxBase: taxBaseMock,
+        config: avataxConfigMock,
+        matches: matchesMock,
         discountsStrategy,
-      );
+      });
 
-      expect(lines).toEqual([
+      expect(lines).toStrictEqual([
         {
           amount: 60,
           quantity: 3,
           taxCode: DEFAULT_TAX_CLASS_ID,
+          itemCode: expect.any(String),
           taxIncluded: true,
           discounted: true,
         },
@@ -121,6 +128,7 @@ describe("AvataxCalculateTaxesPayloadLinesTransformer", () => {
           amount: 20,
           quantity: 1,
           taxCode: DEFAULT_TAX_CLASS_ID,
+          itemCode: expect.any(String),
           taxIncluded: true,
           discounted: true,
         },
@@ -128,6 +136,7 @@ describe("AvataxCalculateTaxesPayloadLinesTransformer", () => {
           amount: 100,
           quantity: 2,
           taxCode: DEFAULT_TAX_CLASS_ID,
+          itemCode: expect.any(String),
           taxIncluded: true,
           discounted: true,
         },
@@ -166,18 +175,19 @@ describe("AvataxCalculateTaxesPayloadLinesTransformer", () => {
         },
       ];
 
-      const lines = transformer.transformWithDiscountType(
-        taxBaseMock,
-        avataxConfigMock,
-        matchesMock,
+      const lines = transformer.transform({
+        taxBase: taxBaseMock,
+        config: avataxConfigMock,
+        matches: matchesMock,
         discountsStrategy,
-      );
+      });
 
-      expect(lines).toEqual([
+      expect(lines).toStrictEqual([
         {
           amount: 60,
           quantity: 3,
           taxCode: DEFAULT_TAX_CLASS_ID,
+          itemCode: expect.any(String),
           taxIncluded: true,
           discounted: false,
         },
@@ -185,6 +195,7 @@ describe("AvataxCalculateTaxesPayloadLinesTransformer", () => {
           amount: 20,
           quantity: 1,
           taxCode: DEFAULT_TAX_CLASS_ID,
+          itemCode: expect.any(String),
           taxIncluded: true,
           discounted: false,
         },
@@ -192,6 +203,7 @@ describe("AvataxCalculateTaxesPayloadLinesTransformer", () => {
           amount: 100,
           quantity: 2,
           taxCode: DEFAULT_TAX_CLASS_ID,
+          itemCode: expect.any(String),
           taxIncluded: true,
           discounted: false,
         },
@@ -232,18 +244,19 @@ describe("AvataxCalculateTaxesPayloadLinesTransformer", () => {
           },
         ];
 
-        const lines = transformer.transformWithDiscountType(
-          taxBaseMock,
-          avataxConfigMock,
-          matchesMock,
+        const lines = transformer.transform({
+          taxBase: taxBaseMock,
+          config: avataxConfigMock,
+          matches: matchesMock,
           discountsStrategy,
-        );
+        });
 
-        expect(lines).toEqual([
+        expect(lines).toStrictEqual([
           {
             amount: 60,
             quantity: 3,
             taxCode: DEFAULT_TAX_CLASS_ID,
+            itemCode: expect.any(String),
             taxIncluded: true,
             discounted: true,
           },
@@ -251,6 +264,7 @@ describe("AvataxCalculateTaxesPayloadLinesTransformer", () => {
             amount: 20,
             quantity: 1,
             taxCode: DEFAULT_TAX_CLASS_ID,
+            itemCode: expect.any(String),
             taxIncluded: true,
             discounted: true,
           },
@@ -258,6 +272,7 @@ describe("AvataxCalculateTaxesPayloadLinesTransformer", () => {
             amount: 100,
             quantity: 2,
             taxCode: DEFAULT_TAX_CLASS_ID,
+            itemCode: expect.any(String),
             taxIncluded: true,
             discounted: true,
           },
@@ -310,18 +325,19 @@ describe("AvataxCalculateTaxesPayloadLinesTransformer", () => {
           },
         ];
 
-        const lines = transformer.transformWithDiscountType(
-          taxBaseMock,
-          avataxConfigMock,
-          matchesMock,
+        const lines = transformer.transform({
+          taxBase: taxBaseMock,
+          config: avataxConfigMock,
+          matches: matchesMock,
           discountsStrategy,
-        );
+        });
 
-        expect(lines).toEqual([
+        expect(lines).toStrictEqual([
           {
             amount: 60,
             quantity: 3,
             taxCode: DEFAULT_TAX_CLASS_ID,
+            itemCode: expect.any(String),
             taxIncluded: true,
             discounted: true,
           },
@@ -329,6 +345,7 @@ describe("AvataxCalculateTaxesPayloadLinesTransformer", () => {
             amount: 20,
             quantity: 1,
             taxCode: DEFAULT_TAX_CLASS_ID,
+            itemCode: expect.any(String),
             taxIncluded: true,
             discounted: true,
           },
@@ -336,6 +353,7 @@ describe("AvataxCalculateTaxesPayloadLinesTransformer", () => {
             amount: 100,
             quantity: 2,
             taxCode: DEFAULT_TAX_CLASS_ID,
+            itemCode: expect.any(String),
             taxIncluded: true,
             discounted: true,
           },
@@ -369,18 +387,19 @@ describe("AvataxCalculateTaxesPayloadLinesTransformer", () => {
           },
         ];
 
-        const lines = transformer.transformWithDiscountType(
-          taxBaseMock,
-          avataxConfigMock,
-          matchesMock,
+        const lines = transformer.transform({
+          taxBase: taxBaseMock,
+          config: avataxConfigMock,
+          matches: matchesMock,
           discountsStrategy,
-        );
+        });
 
-        expect(lines).toEqual([
+        expect(lines).toStrictEqual([
           {
             amount: 60,
             quantity: 3,
             taxCode: DEFAULT_TAX_CLASS_ID,
+            itemCode: expect.any(String),
             taxIncluded: true,
             discounted: true,
           },
@@ -388,6 +407,7 @@ describe("AvataxCalculateTaxesPayloadLinesTransformer", () => {
             amount: 20,
             quantity: 1,
             taxCode: DEFAULT_TAX_CLASS_ID,
+            itemCode: expect.any(String),
             taxIncluded: true,
             discounted: true,
           },
@@ -395,6 +415,7 @@ describe("AvataxCalculateTaxesPayloadLinesTransformer", () => {
             amount: 100,
             quantity: 2,
             taxCode: DEFAULT_TAX_CLASS_ID,
+            itemCode: expect.any(String),
             taxIncluded: true,
             discounted: true,
           },
@@ -432,18 +453,19 @@ describe("AvataxCalculateTaxesPayloadLinesTransformer", () => {
           },
         ];
 
-        const lines = transformer.transformWithDiscountType(
-          taxBaseMock,
-          avataxConfigMock,
-          matchesMock,
+        const lines = transformer.transform({
+          taxBase: taxBaseMock,
+          config: avataxConfigMock,
+          matches: matchesMock,
           discountsStrategy,
-        );
+        });
 
-        expect(lines).toEqual([
+        expect(lines).toStrictEqual([
           {
             amount: 60,
             quantity: 3,
             taxCode: DEFAULT_TAX_CLASS_ID,
+            itemCode: expect.any(String),
             taxIncluded: true,
             discounted: true,
           },
@@ -451,6 +473,7 @@ describe("AvataxCalculateTaxesPayloadLinesTransformer", () => {
             amount: 20,
             quantity: 1,
             taxCode: DEFAULT_TAX_CLASS_ID,
+            itemCode: expect.any(String),
             taxIncluded: true,
             discounted: true,
           },
@@ -458,6 +481,7 @@ describe("AvataxCalculateTaxesPayloadLinesTransformer", () => {
             amount: 100,
             quantity: 2,
             taxCode: DEFAULT_TAX_CLASS_ID,
+            itemCode: expect.any(String),
             taxIncluded: true,
             discounted: true,
           },
@@ -491,18 +515,19 @@ describe("AvataxCalculateTaxesPayloadLinesTransformer", () => {
           },
         ];
 
-        const lines = transformer.transformWithDiscountType(
-          taxBaseMock,
-          avataxConfigMock,
-          matchesMock,
+        const lines = transformer.transform({
+          taxBase: taxBaseMock,
+          config: avataxConfigMock,
+          matches: matchesMock,
           discountsStrategy,
-        );
+        });
 
-        expect(lines).toEqual([
+        expect(lines).toStrictEqual([
           {
             amount: 60,
             quantity: 3,
             taxCode: DEFAULT_TAX_CLASS_ID,
+            itemCode: expect.any(String),
             taxIncluded: true,
             discounted: false,
           },
@@ -510,6 +535,7 @@ describe("AvataxCalculateTaxesPayloadLinesTransformer", () => {
             amount: 20,
             quantity: 1,
             taxCode: DEFAULT_TAX_CLASS_ID,
+            itemCode: expect.any(String),
             taxIncluded: true,
             discounted: false,
           },
@@ -517,6 +543,7 @@ describe("AvataxCalculateTaxesPayloadLinesTransformer", () => {
             amount: 100,
             quantity: 2,
             taxCode: DEFAULT_TAX_CLASS_ID,
+            itemCode: expect.any(String),
             taxIncluded: true,
             discounted: false,
           },
@@ -555,18 +582,19 @@ describe("AvataxCalculateTaxesPayloadLinesTransformer", () => {
           },
         ];
 
-        const lines = transformer.transformWithDiscountType(
-          taxBaseMock,
-          avataxConfigMock,
-          matchesMock,
+        const lines = transformer.transform({
+          taxBase: taxBaseMock,
+          config: avataxConfigMock,
+          matches: matchesMock,
           discountsStrategy,
-        );
+        });
 
-        expect(lines).toEqual([
+        expect(lines).toStrictEqual([
           {
             amount: 60,
             quantity: 3,
             taxCode: DEFAULT_TAX_CLASS_ID,
+            itemCode: expect.any(String),
             taxIncluded: true,
             discounted: false,
           },
@@ -574,6 +602,7 @@ describe("AvataxCalculateTaxesPayloadLinesTransformer", () => {
             amount: 20,
             quantity: 1,
             taxCode: DEFAULT_TAX_CLASS_ID,
+            itemCode: expect.any(String),
             taxIncluded: true,
             discounted: false,
           },
@@ -581,6 +610,7 @@ describe("AvataxCalculateTaxesPayloadLinesTransformer", () => {
             amount: 100,
             quantity: 2,
             taxCode: DEFAULT_TAX_CLASS_ID,
+            itemCode: expect.any(String),
             taxIncluded: true,
             discounted: false,
           },

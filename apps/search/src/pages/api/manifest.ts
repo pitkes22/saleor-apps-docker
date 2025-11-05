@@ -1,14 +1,14 @@
 import { createManifestHandler } from "@saleor/app-sdk/handlers/next";
 import { AppManifest } from "@saleor/app-sdk/types";
+import { wrapWithLoggerContext } from "@saleor/apps-logger/node";
+import { withSpanAttributes } from "@saleor/apps-otel/src/with-span-attributes";
 
 import packageJson from "../../../package.json";
 import { appWebhooks } from "../../../webhooks";
-import { withOtel } from "@saleor/apps-otel";
-import { wrapWithLoggerContext } from "@saleor/apps-logger/node";
 import { loggerContext } from "../../lib/logger-context";
 
 export default wrapWithLoggerContext(
-  withOtel(
+  withSpanAttributes(
     createManifestHandler({
       async manifestFactory({ appBaseUrl }) {
         const iframeBaseUrl = process.env.APP_IFRAME_BASE_URL ?? appBaseUrl;
@@ -27,7 +27,7 @@ export default wrapWithLoggerContext(
           extensions: [
             /**
              * Optionally, extend Dashboard with custom UIs
-             * https://docs.saleor.io/docs/3.x/developer/extending/apps/extending-dashboard-with-apps
+             * https://docs.saleor.io/developer/extending/apps/extending-dashboard-with-apps
              */
           ],
           homepageUrl: "https://github.com/saleor/apps",
@@ -36,7 +36,7 @@ export default wrapWithLoggerContext(
           permissions: [
             /**
              * Set permissions for app if needed
-             * https://docs.saleor.io/docs/3.x/developer/permissions
+             * https://docs.saleor.io/developer/permissions
              */
             "MANAGE_PRODUCTS",
             "MANAGE_PRODUCT_TYPES_AND_ATTRIBUTES",
@@ -46,12 +46,12 @@ export default wrapWithLoggerContext(
           version: packageJson.version,
           webhooks: appWebhooks.map((w) => w.getWebhookManifest(apiBaseURL)),
           author: "Saleor Commerce",
+          requiredSaleorVersion: ">=3.20 <4",
         };
 
         return manifest;
       },
     }),
-    "api/manifest",
   ),
   loggerContext,
 );

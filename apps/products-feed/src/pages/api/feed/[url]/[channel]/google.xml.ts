@@ -1,23 +1,28 @@
-import type { NextApiRequest, NextApiResponse } from "next";
-import { GoogleFeedProductVariantFragment } from "../../../../../../generated/graphql";
-import { apl } from "../../../../../saleor-app";
-import { fetchProductData } from "../../../../../modules/google-feed/fetch-product-data";
-import { GoogleFeedSettingsFetcher } from "../../../../../modules/google-feed/get-google-feed-settings";
-import { generateGoogleXmlFeed } from "../../../../../modules/google-feed/generate-google-xml-feed";
-import { fetchShopData } from "../../../../../modules/google-feed/fetch-shop-data";
-import { uploadFile } from "../../../../../modules/file-storage/s3/upload-file";
-import { createS3ClientFromConfiguration } from "../../../../../modules/file-storage/s3/create-s3-client-from-configuration";
-import { getFileDetails } from "../../../../../modules/file-storage/s3/get-file-details";
-import { getDownloadUrl, getFileName } from "../../../../../modules/file-storage/s3/urls-and-names";
-import { RootConfig } from "../../../../../modules/app-configuration/app-config";
-import { z, ZodError } from "zod";
-import { withOtel } from "@saleor/apps-otel";
 import { SpanStatusCode } from "@opentelemetry/api";
+import { getBaseUrl } from "@saleor/app-sdk/headers";
 import { wrapWithLoggerContext } from "@saleor/apps-logger/node";
-import { createLogger } from "../../../../../logger";
-import { loggerContext } from "../../../../../logger-context";
-import { getOtelTracer } from "@saleor/apps-otel/src/otel-tracer";
-import { createInstrumentedGraphqlClient } from "../../../../../lib/create-instrumented-graphql-client";
+import { ObservabilityAttributes } from "@saleor/apps-otel/src/observability-attributes";
+import { withSpanAttributes } from "@saleor/apps-otel/src/with-span-attributes";
+import type { NextApiRequest, NextApiResponse } from "next";
+import { z, ZodError } from "zod";
+
+import { appRootTracer } from "@/lib/app-root-tracer";
+import { createInstrumentedGraphqlClient } from "@/lib/create-instrumented-graphql-client";
+import { createLogger } from "@/logger";
+import { loggerContext } from "@/logger-context";
+import { RootConfig } from "@/modules/app-configuration/app-config";
+import { createS3ClientFromConfiguration } from "@/modules/file-storage/s3/create-s3-client-from-configuration";
+import { getFileName } from "@/modules/file-storage/s3/file-names";
+import { FileRemover } from "@/modules/file-storage/s3/file-remover";
+import { getFileDetails } from "@/modules/file-storage/s3/get-file-details";
+import { SignedUrls } from "@/modules/file-storage/s3/signed-urls";
+import { uploadFile } from "@/modules/file-storage/s3/upload-file";
+import { FeedXmlBuilder } from "@/modules/google-feed/feed-xml-builder";
+import { getCursors } from "@/modules/google-feed/fetch-product-data";
+import { fetchShopData } from "@/modules/google-feed/fetch-shop-data";
+import { GoogleFeedSettingsFetcher } from "@/modules/google-feed/get-google-feed-settings";
+import { shopDetailsToProxy } from "@/modules/google-feed/shop-details-to-proxy";
+import { apl } from "@/saleor-app";
 
 // By default we cache the feed for 5 minutes. This can be changed by setting the FEED_CACHE_MAX_AGE
 const FEED_CACHE_MAX_AGE = process.env.FEED_CACHE_MAX_AGE
@@ -33,18 +38,14 @@ const validateRequestParams = (req: NextApiRequest) => {
   queryShape.parse(req.query);
 };
 
-const tracer = getOtelTracer();
-
-/**
- * TODO Refactor and test
- */
 export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const url = req.query.url as string;
   const channel = req.query.channel as string;
 
+  loggerContext.set(ObservabilityAttributes.SALEOR_API_URL, url);
+  loggerContext.set(ObservabilityAttributes.CHANNEL_SLUG, channel);
+
   const logger = createLogger("Feed handler", {
-    saleorApiUrl: url,
-    channel,
     route: "api/feed/{url}/{channel}/google.xml",
   });
 
@@ -58,6 +59,7 @@ export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     const fieldErrors = error.flatten().fieldErrors;
 
     logger.warn("Invalid request params", { error: fieldErrors });
+
     return res.status(400).json({ error: fieldErrors });
   }
 
@@ -66,6 +68,7 @@ export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
   if (!authData) {
     logger.warn(`The app has not been configured with the ${url}`);
+
     return res.status(400).json({ error: "The given instance has not been registered" });
   }
 
@@ -81,6 +84,10 @@ export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     token: authData.token,
   });
 
+  loggerContext.set(ObservabilityAttributes.SALEOR_API_URL, authData.saleorApiUrl);
+
+  loggerContext.set(ObservabilityAttributes.CHANNEL_SLUG, channel);
+
   if (!client) {
     logger.error("Can't create the gql client");
 
@@ -88,15 +95,19 @@ export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   let storefrontUrl: string;
-  let productStorefrontUrl: string;
   let bucketConfiguration: RootConfig["s3"] | undefined;
-  let attributeMapping: RootConfig["attributeMapping"] | undefined;
-  let titleTemplate: RootConfig["titleTemplate"] | undefined;
-  let imageSize: RootConfig["imageSize"] | undefined;
+
+  let channelSettings: any;
 
   try {
     const settingsFetcher = GoogleFeedSettingsFetcher.createFromAuthData(authData);
     const settings = await settingsFetcher.fetch(channel);
+
+    channelSettings = settings;
+
+    if (!settings.s3BucketConfiguration) {
+      return res.status(400).send("App not configured");
+    }
 
     logger.info("Settings has been fetched", {
       storefrontUrl: settings.storefrontUrl,
@@ -108,13 +119,9 @@ export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     });
 
     storefrontUrl = settings.storefrontUrl;
-    productStorefrontUrl = settings.productStorefrontUrl;
     bucketConfiguration = settings.s3BucketConfiguration;
-    attributeMapping = settings.attributeMapping;
-    titleTemplate = settings.titleTemplate;
-    imageSize = settings.imageSize;
   } catch (error) {
-    logger.warn("The application has not been configured", { error });
+    logger.warn("The application has not been configured", { error: error });
 
     return res
       .status(400)
@@ -161,26 +168,25 @@ export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
           bucketName: bucketConfiguration!.bucketName,
           fileName,
         });
+
         return undefined;
       });
 
     if (feedLastModificationDate) {
       logger.info("Feed has been generated previously, checking the last modification date", {
-        feedLastModificationDate,
+        feedLastModificationDate: feedLastModificationDate,
       });
 
       const secondsSinceLastModification = (Date.now() - feedLastModificationDate.getTime()) / 1000;
 
       if (secondsSinceLastModification < FEED_CACHE_MAX_AGE) {
-        const downloadUrl = getDownloadUrl({
-          s3BucketConfiguration: bucketConfiguration,
-          saleorApiUrl: authData.saleorApiUrl,
-          channel,
+        const downloadUrl = await new SignedUrls(s3Client).generateSignedGetObjectUrl({
+          expiresSeconds: 30,
+          fileName,
+          bucket: bucketConfiguration!.bucketName,
         });
 
-        logger.info("Feed has been generated recently, returning the last version", {
-          downloadUrl,
-        });
+        logger.info("Feed has been generated recently, returning the last version");
 
         return res.redirect(downloadUrl);
       }
@@ -191,49 +197,65 @@ export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
   logger.debug("Generating a new feed");
 
-  let productVariants: GoogleFeedProductVariantFragment[] = [];
+  const cursors = await getCursors({ client, channel });
 
-  try {
-    productVariants = await fetchProductData({ client, channel, imageSize });
+  const baseUrl = getBaseUrl(req.headers);
 
-    logger.info("Product data fetched successfully", {
-      productVariantsLength: productVariants.length,
-    });
-  } catch (error) {
-    logger.error("Error during the product data fetch", { error });
-    return res.status(400).end();
+  const xmlUrlResponses = [];
+
+  for (const cursor of cursors) {
+    const urlToFetch = new URL(
+      `/api/feed/${encodeURIComponent(authData.saleorApiUrl)}/${encodeURIComponent(
+        channel,
+      )}/${encodeURIComponent(cursor)}/generate-chunk`,
+      baseUrl,
+    );
+
+    const result = await fetch(urlToFetch, {
+      body: JSON.stringify({
+        authData,
+        channelSettings: channelSettings,
+      }),
+      headers: {
+        ContentType: "application/json",
+        authorization: process.env.REQUEST_SECRET as string,
+      },
+      method: "POST",
+    }).then((r) => r.json());
+
+    xmlUrlResponses.push(result);
   }
 
-  logger.debug("Product data fetched. Generating the output");
+  const chunks = await Promise.all(
+    xmlUrlResponses.map((resp) => fetch(resp.downloadUrl).then((r) => r.text())),
+  );
 
-  const xmlContent = generateGoogleXmlFeed({
-    shopDescription,
-    shopName,
+  const chunkFileNames = await Promise.all(xmlUrlResponses.map((res) => res.fileName));
+
+  const mergedChunks = chunks.join("\n");
+
+  const xmlBuilder = new FeedXmlBuilder();
+
+  const channelData = shopDetailsToProxy({
+    title: shopName,
+    description: shopDescription,
     storefrontUrl,
-    productStorefrontUrl,
-    productVariants,
-    attributeMapping,
-    titleTemplate,
   });
 
-  if (!bucketConfiguration) {
-    logger.info("Bucket configuration not found, returning feed directly");
+  const rootXml = xmlBuilder.buildRootXml({
+    channelData,
+  });
 
-    res.setHeader("Content-Type", "text/xml");
-    res.setHeader("Cache-Control", `s-maxage=${FEED_CACHE_MAX_AGE}`);
-    res.write(xmlContent);
-    res.end();
-    return;
-  }
+  const rootXmlWithProducts = xmlBuilder.injectProductsString(rootXml, mergedChunks);
 
   logger.info("Bucket configuration found, uploading the feed to S3");
-  const s3Client = createS3ClientFromConfiguration(bucketConfiguration);
+  const s3Client = createS3ClientFromConfiguration(channelSettings.s3BucketConfiguration);
   const fileName = getFileName({
     saleorApiUrl: authData.saleorApiUrl,
     channel,
   });
 
-  await tracer.startActiveSpan("upload to s3", async (span) => {
+  await appRootTracer.startActiveSpan("upload to s3", async (span) => {
     span.setAttribute("bucketName", bucketConfiguration!.bucketName);
     span.setAttribute("fileName", fileName);
 
@@ -241,24 +263,27 @@ export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       await uploadFile({
         s3Client,
         bucketName: bucketConfiguration!.bucketName,
-        buffer: Buffer.from(xmlContent),
+        buffer: Buffer.from(rootXmlWithProducts),
         fileName,
       });
 
-      const downloadUrl = getDownloadUrl({
-        s3BucketConfiguration: bucketConfiguration!,
-        saleorApiUrl: authData.saleorApiUrl,
-        channel,
+      const downloadUrl = await new SignedUrls(s3Client).generateSignedGetObjectUrl({
+        expiresSeconds: 30,
+        fileName,
+        bucket: bucketConfiguration!.bucketName,
       });
 
-      logger.info("Feed uploaded to S3, redirecting the download URL", {
-        downloadUrl,
-      });
+      logger.info("Feed uploaded to S3, redirecting the download URL");
+
+      const fileRemover = new FileRemover(s3Client);
+
+      await fileRemover.removeFilesBulk(chunkFileNames, bucketConfiguration!.bucketName);
 
       return res.redirect(downloadUrl);
     } catch (error) {
-      logger.error("Could not upload the feed to S3", { error });
+      logger.error("Could not upload the feed to S3", { error: error });
       span.setStatus({ code: SpanStatusCode.ERROR });
+
       return res.status(500).json({ error: "Could not upload the feed to S3" });
     } finally {
       span.end();
@@ -266,7 +291,4 @@ export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   });
 };
 
-export default wrapWithLoggerContext(
-  withOtel(handler, "/api/feed/[url]/[channel]/google.xml"),
-  loggerContext,
-);
+export default wrapWithLoggerContext(withSpanAttributes(handler), loggerContext);

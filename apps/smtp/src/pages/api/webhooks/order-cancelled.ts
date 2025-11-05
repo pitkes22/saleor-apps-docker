@@ -1,18 +1,19 @@
-import { NextWebhookApiHandler, SaleorAsyncWebhook } from "@saleor/app-sdk/handlers/next";
+import { NextJsWebhookHandler, SaleorAsyncWebhook } from "@saleor/app-sdk/handlers/next";
+import { wrapWithLoggerContext } from "@saleor/apps-logger/node";
+import { ObservabilityAttributes } from "@saleor/apps-otel/src/observability-attributes";
+import { withSpanAttributes } from "@saleor/apps-otel/src/with-span-attributes";
+import { captureException } from "@sentry/nextjs";
 import { gql } from "urql";
-import { saleorApp } from "../../../saleor-app";
+
 import {
   OrderCancelledWebhookPayloadFragment,
   OrderDetailsFragmentDoc,
 } from "../../../../generated/graphql";
-import { withOtel } from "@saleor/apps-otel";
 import { createLogger } from "../../../logger";
-import { SendEventMessagesUseCaseFactory } from "../../../modules/event-handlers/use-case/send-event-messages.use-case.factory";
-import { SendEventMessagesUseCase } from "../../../modules/event-handlers/use-case/send-event-messages.use-case";
-import { captureException } from "@sentry/nextjs";
-import { wrapWithLoggerContext } from "@saleor/apps-logger/node";
 import { loggerContext } from "../../../logger-context";
-import { ObservabilityAttributes } from "@saleor/apps-otel/src/lib/observability-attributes";
+import { SendEventMessagesUseCase } from "../../../modules/event-handlers/use-case/send-event-messages.use-case";
+import { SendEventMessagesUseCaseFactory } from "../../../modules/event-handlers/use-case/send-event-messages.use-case.factory";
+import { saleorApp } from "../../../saleor-app";
 
 const OrderCancelledWebhookPayload = gql`
   ${OrderDetailsFragmentDoc}
@@ -35,7 +36,7 @@ const OrderCancelledGraphqlSubscription = gql`
 export const orderCancelledWebhook = new SaleorAsyncWebhook<OrderCancelledWebhookPayloadFragment>({
   name: "Order Cancelled in Saleor",
   webhookPath: "api/webhooks/order-cancelled",
-  asyncEvent: "ORDER_CANCELLED",
+  event: "ORDER_CANCELLED",
   apl: saleorApp.apl,
   query: OrderCancelledGraphqlSubscription,
 });
@@ -44,7 +45,7 @@ const logger = createLogger(orderCancelledWebhook.webhookPath);
 
 const useCaseFactory = new SendEventMessagesUseCaseFactory();
 
-const handler: NextWebhookApiHandler<OrderCancelledWebhookPayloadFragment> = async (
+const handler: NextJsWebhookHandler<OrderCancelledWebhookPayloadFragment> = async (
   req,
   res,
   context,
@@ -56,6 +57,7 @@ const handler: NextWebhookApiHandler<OrderCancelledWebhookPayloadFragment> = asy
 
   if (!order) {
     logger.error("No order data payload");
+
     return res.status(200).end();
   }
 
@@ -63,6 +65,7 @@ const handler: NextWebhookApiHandler<OrderCancelledWebhookPayloadFragment> = asy
 
   if (!recipientEmail?.length) {
     logger.error(`The order ${order.number} had no email recipient set. Aborting.`);
+
     return res
       .status(200)
       .json({ error: "Email recipient has not been specified in the event payload." });
@@ -93,7 +96,7 @@ const handler: NextWebhookApiHandler<OrderCancelledWebhookPayloadFragment> = asy
             const errorInstance = err[0];
 
             if (errorInstance instanceof SendEventMessagesUseCase.ServerError) {
-              logger.error("Failed to send email(s) [server error]", { error: err });
+              logger.warn("Failed to send email(s) [server error]", { error: err });
 
               return res.status(500).json({ message: "Failed to send email" });
             } else if (errorInstance instanceof SendEventMessagesUseCase.ClientError) {
@@ -125,7 +128,7 @@ const handler: NextWebhookApiHandler<OrderCancelledWebhookPayloadFragment> = asy
 };
 
 export default wrapWithLoggerContext(
-  withOtel(orderCancelledWebhook.createHandler(handler), "api/webhooks/order-cancelled"),
+  withSpanAttributes(orderCancelledWebhook.createHandler(handler)),
   loggerContext,
 );
 

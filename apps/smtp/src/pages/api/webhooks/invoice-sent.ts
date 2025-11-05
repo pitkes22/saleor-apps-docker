@@ -1,18 +1,19 @@
-import { NextWebhookApiHandler, SaleorAsyncWebhook } from "@saleor/app-sdk/handlers/next";
+import { NextJsWebhookHandler, SaleorAsyncWebhook } from "@saleor/app-sdk/handlers/next";
+import { wrapWithLoggerContext } from "@saleor/apps-logger/node";
+import { ObservabilityAttributes } from "@saleor/apps-otel/src/observability-attributes";
+import { withSpanAttributes } from "@saleor/apps-otel/src/with-span-attributes";
+import { captureException } from "@sentry/nextjs";
 import { gql } from "urql";
-import { saleorApp } from "../../../saleor-app";
+
 import {
   InvoiceSentWebhookPayloadFragment,
   OrderDetailsFragmentDoc,
 } from "../../../../generated/graphql";
-import { withOtel } from "@saleor/apps-otel";
 import { createLogger } from "../../../logger";
-import { SendEventMessagesUseCaseFactory } from "../../../modules/event-handlers/use-case/send-event-messages.use-case.factory";
-import { SendEventMessagesUseCase } from "../../../modules/event-handlers/use-case/send-event-messages.use-case";
-import { captureException } from "@sentry/nextjs";
-import { wrapWithLoggerContext } from "@saleor/apps-logger/node";
 import { loggerContext } from "../../../logger-context";
-import { ObservabilityAttributes } from "@saleor/apps-otel/src/lib/observability-attributes";
+import { SendEventMessagesUseCase } from "../../../modules/event-handlers/use-case/send-event-messages.use-case";
+import { SendEventMessagesUseCaseFactory } from "../../../modules/event-handlers/use-case/send-event-messages.use-case.factory";
+import { saleorApp } from "../../../saleor-app";
 
 const InvoiceSentWebhookPayload = gql`
   ${OrderDetailsFragmentDoc}
@@ -52,7 +53,7 @@ const InvoiceSentGraphqlSubscription = gql`
 export const invoiceSentWebhook = new SaleorAsyncWebhook<InvoiceSentWebhookPayloadFragment>({
   name: "Invoice sent in Saleor",
   webhookPath: "api/webhooks/invoice-sent",
-  asyncEvent: "INVOICE_SENT",
+  event: "INVOICE_SENT",
   apl: saleorApp.apl,
   query: InvoiceSentGraphqlSubscription,
 });
@@ -61,7 +62,7 @@ const logger = createLogger(invoiceSentWebhook.name);
 
 const useCaseFactory = new SendEventMessagesUseCaseFactory();
 
-const handler: NextWebhookApiHandler<InvoiceSentWebhookPayloadFragment> = async (
+const handler: NextJsWebhookHandler<InvoiceSentWebhookPayloadFragment> = async (
   req,
   res,
   context,
@@ -112,7 +113,7 @@ const handler: NextWebhookApiHandler<InvoiceSentWebhookPayloadFragment> = async 
             const errorInstance = err[0];
 
             if (errorInstance instanceof SendEventMessagesUseCase.ServerError) {
-              logger.error("Failed to send email(s) [server error]", { error: err });
+              logger.warn("Failed to send email(s) [server error]", { error: err });
 
               return res.status(500).json({ message: "Failed to send email" });
             } else if (errorInstance instanceof SendEventMessagesUseCase.ClientError) {
@@ -144,7 +145,7 @@ const handler: NextWebhookApiHandler<InvoiceSentWebhookPayloadFragment> = async 
 };
 
 export default wrapWithLoggerContext(
-  withOtel(invoiceSentWebhook.createHandler(handler), "api/webhooks/invoice-sent"),
+  withSpanAttributes(invoiceSentWebhook.createHandler(handler)),
   loggerContext,
 );
 

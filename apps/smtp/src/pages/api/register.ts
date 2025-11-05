@@ -1,13 +1,13 @@
 import { createAppRegisterHandler } from "@saleor/app-sdk/handlers/next";
+import { wrapWithLoggerContext } from "@saleor/apps-logger/node";
+import { withSpanAttributes } from "@saleor/apps-otel/src/with-span-attributes";
+import { SaleorVersionCompatibilityValidator } from "@saleor/apps-shared/saleor-version-compatibility-validator";
 
-import { withOtel } from "@saleor/apps-otel";
-import { SaleorVersionCompatibilityValidator } from "@saleor/apps-shared";
 import { createInstrumentedGraphqlClient } from "../../lib/create-instrumented-graphql-client";
 import { createLogger } from "../../logger";
+import { loggerContext } from "../../logger-context";
 import { fetchSaleorVersion } from "../../modules/feature-flag-service/fetch-saleor-version";
 import { REQUIRED_SALEOR_VERSION, saleorApp } from "../../saleor-app";
-import { loggerContext } from "../../logger-context";
-import { wrapWithLoggerContext } from "@saleor/apps-logger/node";
 
 const allowedUrlsPattern = process.env.ALLOWED_DOMAIN_PATTERN;
 
@@ -16,12 +16,13 @@ const allowedUrlsPattern = process.env.ALLOWED_DOMAIN_PATTERN;
  * It will exchange tokens with app, so saleorApp.apl will contain token
  */
 export default wrapWithLoggerContext(
-  withOtel(
+  withSpanAttributes(
     createAppRegisterHandler({
       apl: saleorApp.apl,
       allowedSaleorUrls: [
         (url) => {
           if (allowedUrlsPattern) {
+            // we don't escape the pattern because it's not user input - it's an ENV variable controlled by us
             const regex = new RegExp(allowedUrlsPattern);
 
             return regex.test(url);
@@ -82,7 +83,6 @@ export default wrapWithLoggerContext(
         logger.info("Saleor version validated successfully");
       },
     }),
-    "api/register",
   ),
   loggerContext,
 );

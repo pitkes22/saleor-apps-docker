@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import { HtmlToTextCompiler } from "./html-to-text-compiler";
 
 describe("HtmlToTextCompiler", () => {
@@ -7,7 +8,7 @@ describe("HtmlToTextCompiler", () => {
 
     const result = compiler.compile("<div>Foo: <span>bar</span></div>");
 
-    expect(result._unsafeUnwrap()).toEqual("Foo: bar");
+    expect(result._unsafeUnwrap()).toStrictEqual("Foo: bar");
   });
 
   it("Fallbacks to empty string when HTML is broken", () => {
@@ -15,6 +16,6 @@ describe("HtmlToTextCompiler", () => {
 
     const result = compiler.compile("<div? aaa bbb");
 
-    expect(result._unsafeUnwrap()).toEqual("");
+    expect(result._unsafeUnwrap()).toStrictEqual("");
   });
 });

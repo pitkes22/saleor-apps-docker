@@ -1,6 +1,6 @@
-import { createProtectedHandler, NextProtectedApiHandler } from "@saleor/app-sdk/handlers/next";
+import { createProtectedHandler, NextJsProtectedApiHandler } from "@saleor/app-sdk/handlers/next";
 import { wrapWithLoggerContext } from "@saleor/apps-logger/node";
-import { withOtel } from "@saleor/apps-otel";
+import { withSpanAttributes } from "@saleor/apps-otel/src/with-span-attributes";
 import { Client } from "urql";
 
 import { FetchOwnWebhooksDocument, OwnWebhookFragment } from "../../../generated/graphql";
@@ -23,7 +23,7 @@ export type WebhooksStatusResponse = {
 };
 
 export const webhooksStatusHandlerFactory =
-  ({ graphqlClientFactory }: FactoryProps): NextProtectedApiHandler<WebhooksStatusResponse> =>
+  ({ graphqlClientFactory }: FactoryProps): NextJsProtectedApiHandler<WebhooksStatusResponse> =>
   async (req, res, { authData }) => {
     /**
      * Initialize services
@@ -57,7 +57,7 @@ export const webhooksStatusHandlerFactory =
   };
 
 export default wrapWithLoggerContext(
-  withOtel(
+  withSpanAttributes(
     createProtectedHandler(
       webhooksStatusHandlerFactory({
         graphqlClientFactory(saleorApiUrl: string, token: string) {
@@ -70,7 +70,6 @@ export default wrapWithLoggerContext(
       saleorApp.apl,
       ["MANAGE_APPS"],
     ),
-    "api/webhooks-status",
   ),
   loggerContext,
 );

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
+
 import { channelListingToAlgoliaIndexId, productAndVariantToAlgolia } from "./algoliaUtils";
-import { AttributeInputTypeEnum } from "../../../generated/graphql";
 
 describe("algoliaUtils", function () {
   describe("channelListingToAlgoliaIndexId", function () {
@@ -12,7 +12,7 @@ describe("algoliaUtils", function () {
         "staging",
       );
 
-      expect(result).toEqual("staging.usd.USD.products");
+      expect(result).toStrictEqual("staging.usd.USD.products");
     });
 
     it("Creates proper index from channel and empty string prefix", () => {
@@ -23,7 +23,7 @@ describe("algoliaUtils", function () {
         "",
       );
 
-      expect(result).toEqual("usd.USD.products");
+      expect(result).toStrictEqual("usd.USD.products");
     });
 
     it("Creates proper index from channel and undefined prefix", () => {
@@ -34,7 +34,7 @@ describe("algoliaUtils", function () {
         undefined,
       );
 
-      expect(result).toEqual("usd.USD.products");
+      expect(result).toStrictEqual("usd.USD.products");
     });
   });
 
@@ -56,7 +56,7 @@ describe("algoliaUtils", function () {
               values: [
                 {
                   name: "true",
-                  inputType: AttributeInputTypeEnum.Boolean,
+                  inputType: "BOOLEAN",
                   boolean: true,
                 },
               ],
@@ -68,7 +68,7 @@ describe("algoliaUtils", function () {
               values: [
                 {
                   name: "true",
-                  inputType: AttributeInputTypeEnum.Boolean,
+                  inputType: "BOOLEAN",
                   boolean: false,
                 },
               ],
@@ -94,7 +94,7 @@ describe("algoliaUtils", function () {
                 values: [
                   {
                     name: "true",
-                    inputType: AttributeInputTypeEnum.Boolean,
+                    inputType: "BOOLEAN",
                     boolean: true,
                   },
                 ],
@@ -106,7 +106,7 @@ describe("algoliaUtils", function () {
                 values: [
                   {
                     name: "true",
-                    inputType: AttributeInputTypeEnum.Boolean,
+                    inputType: "BOOLEAN",
                     boolean: false,
                   },
                 ],
@@ -126,6 +126,209 @@ describe("algoliaUtils", function () {
       expect(mappedEntity.attributes["booleanTrue"]).toBe(true);
       // @ts-expect-error - record is not typed (attributes are dynamic keys)
       expect(mappedEntity.attributes["booleanFalse"]).toBe(false);
+    });
+
+    it("Maps single-value non-boolean attribute as string", () => {
+      const mappedEntity = productAndVariantToAlgolia({
+        channel: "test",
+        enabledKeys: ["attributes"],
+        variant: {
+          id: "id",
+          attributes: [
+            {
+              attribute: {
+                name: "size",
+              },
+              values: [
+                {
+                  name: "Large",
+                  inputType: "DROPDOWN",
+                  boolean: null,
+                },
+              ],
+            },
+          ],
+          name: "product name",
+          metadata: [],
+          product: {
+            __typename: undefined,
+            id: "",
+            name: "",
+            description: undefined,
+            slug: "",
+            variants: undefined,
+            category: undefined,
+            thumbnail: undefined,
+            media: undefined,
+            attributes: [],
+            channelListings: undefined,
+            collections: undefined,
+            metadata: [],
+          },
+        },
+      });
+
+      // @ts-expect-error - record is not typed (attributes are dynamic keys)
+      expect(mappedEntity.attributes["size"]).toBe("Large");
+    });
+
+    it("Maps multi-value attributes as array of strings", () => {
+      const mappedEntity = productAndVariantToAlgolia({
+        channel: "test",
+        enabledKeys: ["attributes"],
+        variant: {
+          id: "id",
+          attributes: [
+            {
+              attribute: {
+                name: "colors",
+              },
+              values: [
+                {
+                  name: "Red",
+                  inputType: "MULTISELECT",
+                  boolean: null,
+                },
+                {
+                  name: "Blue",
+                  inputType: "MULTISELECT",
+                  boolean: null,
+                },
+                {
+                  name: "Green",
+                  inputType: "MULTISELECT",
+                  boolean: null,
+                },
+              ],
+            },
+          ],
+          name: "product name",
+          metadata: [],
+          product: {
+            __typename: undefined,
+            id: "",
+            name: "",
+            description: undefined,
+            slug: "",
+            variants: undefined,
+            category: undefined,
+            thumbnail: undefined,
+            media: undefined,
+            attributes: [],
+            channelListings: undefined,
+            collections: undefined,
+            metadata: [],
+          },
+        },
+      });
+
+      // @ts-expect-error - record is not typed (attributes are dynamic keys)
+      expect(mappedEntity.attributes["colors"]).toStrictEqual(["Red", "Blue", "Green"]);
+      // @ts-expect-error - record is not typed (attributes are dynamic keys)
+      expect(Array.isArray(mappedEntity.attributes["colors"])).toBe(true);
+    });
+
+    it("Filters out inactive variants from otherVariants", () => {
+      const currentChannel = "channel-1";
+      const mappedEntity = productAndVariantToAlgolia({
+        channel: currentChannel,
+        enabledKeys: ["otherVariants"],
+        variant: {
+          id: "variant-1",
+          attributes: [],
+          name: "Variant 1",
+          metadata: [],
+          product: {
+            __typename: undefined,
+            id: "product-1",
+            name: "Product 1",
+            description: undefined,
+            slug: "product-1",
+            variants: [
+              // Current variant - should be excluded
+              {
+                id: "variant-1",
+                channelListings: [
+                  {
+                    id: "cl-1",
+                    channel: {
+                      slug: currentChannel,
+                      currencyCode: "USD",
+                    },
+                  },
+                ],
+              },
+              // Active variant in current channel - should be included
+              {
+                id: "variant-2",
+                channelListings: [
+                  {
+                    id: "cl-2",
+                    channel: {
+                      slug: currentChannel,
+                      currencyCode: "USD",
+                    },
+                  },
+                ],
+              },
+              // Inactive variant (no channel listing) - should be excluded
+              {
+                id: "variant-3",
+                channelListings: [],
+              },
+              // Variant with other channel listing - should be excluded
+              {
+                id: "variant-4",
+                channelListings: [
+                  {
+                    id: "cl-4",
+                    channel: {
+                      slug: "other-channel",
+                      currencyCode: "EUR",
+                    },
+                  },
+                ],
+              },
+              // Variant with multiple channels including current one - should be included
+              {
+                id: "variant-5",
+                channelListings: [
+                  {
+                    id: "cl-5a",
+                    channel: {
+                      slug: "other-channel",
+                      currencyCode: "EUR",
+                    },
+                  },
+                  {
+                    id: "cl-5b",
+                    channel: {
+                      slug: currentChannel,
+                      currencyCode: "USD",
+                    },
+                  },
+                ],
+              },
+            ],
+            category: undefined,
+            thumbnail: undefined,
+            media: undefined,
+            attributes: [],
+            channelListings: undefined,
+            collections: undefined,
+            metadata: [],
+          },
+        },
+      });
+
+      // Should only include variant-2 and variant-5 (active in current channel)
+      expect(mappedEntity.otherVariants).toHaveLength(2);
+      expect(mappedEntity.otherVariants).toContain("variant-2");
+      expect(mappedEntity.otherVariants).toContain("variant-5");
+      // Should not include current variant or inactive variants
+      expect(mappedEntity.otherVariants).not.toContain("variant-1");
+      expect(mappedEntity.otherVariants).not.toContain("variant-3");
+      expect(mappedEntity.otherVariants).not.toContain("variant-4");
     });
   });
 });

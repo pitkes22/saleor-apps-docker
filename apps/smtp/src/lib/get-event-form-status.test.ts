@@ -1,21 +1,22 @@
 import { describe, expect, it } from "vitest";
+
 import { getEventFormStatus } from "./get-event-form-status";
-import { PermissionEnum } from "../../generated/graphql";
 
 describe("getEventFormStatus", function () {
   it("No message or disable flag, when event other than GIFT_CARD_SENT is passed", () => {
     expect(
       getEventFormStatus({
         eventType: "ORDER_CREATED",
-        appPermissions: [PermissionEnum.ManageGiftCard],
+        appPermissions: ["MANAGE_GIFT_CARD"],
         featureFlags: {
           giftCardSentEvent: true,
           orderRefundedEvent: true,
         },
       }),
-    ).toEqual({
-      tooltipMessage: undefined,
+    ).toStrictEqual({
       isDisabled: false,
+      missingPermission: undefined,
+      requiredSaleorVersion: undefined,
     });
     expect(
       getEventFormStatus({
@@ -26,7 +27,7 @@ describe("getEventFormStatus", function () {
           orderRefundedEvent: true,
         },
       }),
-    ).toEqual({
+    ).toStrictEqual({
       isDisabled: false,
       missingPermission: undefined,
       requiredSaleorVersion: undefined,
@@ -43,9 +44,9 @@ describe("getEventFormStatus", function () {
           orderRefundedEvent: true,
         },
       }),
-    ).toEqual({
+    ).toStrictEqual({
       isDisabled: true,
-      missingPermission: PermissionEnum.ManageGiftCard,
+      missingPermission: "MANAGE_GIFT_CARD",
       requiredSaleorVersion: undefined,
     });
   });
@@ -54,13 +55,13 @@ describe("getEventFormStatus", function () {
     expect(
       getEventFormStatus({
         eventType: "GIFT_CARD_SENT",
-        appPermissions: [PermissionEnum.ManageGiftCard],
+        appPermissions: ["MANAGE_GIFT_CARD"],
         featureFlags: {
           giftCardSentEvent: false,
           orderRefundedEvent: true,
         },
       }),
-    ).toEqual({
+    ).toStrictEqual({
       isDisabled: true,
       missingPermission: undefined,
       requiredSaleorVersion: ">=3.13",

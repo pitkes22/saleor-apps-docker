@@ -1,8 +1,9 @@
-import React, { PropsWithChildren } from "react";
-import { describe, expect, it } from "vitest";
-import { renderHook } from "@testing-library/react";
-import { useGetFeedApiUrl } from "./use-get-feed-api-url";
 import { AppBridge, AppBridgeProvider } from "@saleor/app-sdk/app-bridge";
+import { renderHook } from "@testing-library/react";
+import { PropsWithChildren } from "react";
+import { describe, expect, it } from "vitest";
+
+import { useGetFeedApiUrl } from "./use-get-feed-api-url";
 
 describe("useGetFeedApiUrl", function () {
   const appBridge = new AppBridge({ saleorApiUrl: "https://example.com/graphql/" });
@@ -16,8 +17,8 @@ describe("useGetFeedApiUrl", function () {
       wrapper: HookWrapper,
     });
 
-    expect(result.current).toEqual(
-      "http://localhost:3000/api/feed/https%3A%2F%2Fexample.com%2Fgraphql%2F/test-slug/google.xml"
+    expect(result.current).toStrictEqual(
+      "http://localhost:3000/api/feed/https%3A%2F%2Fexample.com%2Fgraphql%2F/test-slug/google.xml",
     );
   });
 });

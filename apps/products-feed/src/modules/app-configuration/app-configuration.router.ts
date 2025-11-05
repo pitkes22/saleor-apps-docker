@@ -1,15 +1,15 @@
-import { router } from "../trpc/trpc-server";
-import { protectedClientProcedure } from "../trpc/protected-client-procedure";
-
-import { AppConfigSchema, imageSizeInputSchema, titleTemplateInputSchema } from "./app-config";
-import { z } from "zod";
-import { createS3ClientFromConfiguration } from "../file-storage/s3/create-s3-client-from-configuration";
-import { checkBucketAccess } from "../file-storage/s3/check-bucket-access";
 import { TRPCError } from "@trpc/server";
-import { AttributeFetcher } from "./attribute-fetcher";
-import { renderHandlebarsTemplate } from "../handlebarsTemplates/render-handlebars-template";
-import { prepareExampleVariantData } from "./prepare-example-variant-data";
+import { z } from "zod";
+
 import { createLogger } from "../../logger";
+import { checkBucketAccess } from "../file-storage/s3/check-bucket-access";
+import { createS3ClientFromConfiguration } from "../file-storage/s3/create-s3-client-from-configuration";
+import { renderHandlebarsTemplate } from "../handlebarsTemplates/render-handlebars-template";
+import { protectedClientProcedure } from "../trpc/protected-client-procedure";
+import { router } from "../trpc/trpc-server";
+import { AppConfigSchema, imageSizeInputSchema, titleTemplateInputSchema } from "./app-config";
+import { AttributeFetcher } from "./attribute-fetcher";
+import { prepareExampleVariantData } from "./prepare-example-variant-data";
 
 export const appConfigurationRouter = router({
   /**
@@ -24,6 +24,7 @@ export const appConfigurationRouter = router({
       const configuration = await getConfig();
 
       logger.debug("Configuration fetched");
+
       return configuration.getRootConfig();
     } catch (e) {
       logger.warn("Can't fetch the configuration", { error: e });
@@ -52,11 +53,14 @@ export const appConfigurationRouter = router({
           s3Client,
         });
         logger.info("Verification succeeded");
-      } catch {
-        logger.warn("Validation failed");
+      } catch (e) {
+        logger.warn("Validation failed", {
+          error: e,
+        });
         throw new TRPCError({
           code: "BAD_REQUEST",
-          message: "Could not access the S3 bucket using the provided credentials",
+          message:
+            "Could not access the S3 bucket using the provided credentials. Check permissions",
         });
       }
     }),
@@ -85,7 +89,8 @@ export const appConfigurationRouter = router({
         logger.warn("Bucket access check failed", { error: e });
         throw new TRPCError({
           code: "BAD_REQUEST",
-          message: "Could not access the S3 bucket using the provided credentials",
+          message:
+            "Could not access the S3 bucket using the provided credentials. Check permissions",
         });
       }
 
@@ -137,6 +142,7 @@ export const appConfigurationRouter = router({
 
       await appConfigMetadataManager.set(config.serialize());
       logger.info("Attribute map set");
+
       return null;
     }),
   getAttributes: protectedClientProcedure.query(async ({ ctx: { apiClient } }) => {
@@ -152,7 +158,7 @@ export const appConfigurationRouter = router({
       });
     });
 
-    logger.debug("Returning attributes", { first: result[0], totaLength: result.length });
+    logger.debug("Returning attributes", { first: result[0], totalLength: result.length });
 
     return result;
   }),
@@ -169,6 +175,7 @@ export const appConfigurationRouter = router({
       await appConfigMetadataManager.set(config.serialize());
 
       logger.info("image size set");
+
       return null;
     }),
 
@@ -199,6 +206,7 @@ export const appConfigurationRouter = router({
       await appConfigMetadataManager.set(config.serialize());
 
       logger.info("Template title set");
+
       return null;
     }),
 

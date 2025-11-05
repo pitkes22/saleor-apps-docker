@@ -1,16 +1,14 @@
 import { createManifestHandler } from "@saleor/app-sdk/handlers/next";
 import { AppManifest } from "@saleor/app-sdk/types";
-
-import { createLogger } from "../../logger";
-
 import { wrapWithLoggerContext } from "@saleor/apps-logger/node";
+import { withSpanAttributes } from "@saleor/apps-otel/src/with-span-attributes";
 
 import packageJson from "../../../package.json";
-import { withOtel } from "@saleor/apps-otel";
+import { createLogger } from "../../logger";
 import { loggerContext } from "../../logger-context";
 
 export default wrapWithLoggerContext(
-  withOtel(
+  withSpanAttributes(
     createManifestHandler({
       async manifestFactory({ appBaseUrl }) {
         const iframeBaseUrl = process.env.APP_IFRAME_BASE_URL ?? appBaseUrl;
@@ -38,13 +36,13 @@ export default wrapWithLoggerContext(
           supportUrl: "https://github.com/saleor/apps/discussions",
           tokenTargetUrl: `${apiBaseURL}/api/register`,
           version: packageJson.version,
+          requiredSaleorVersion: ">=3.21 <4",
           webhooks: [],
         };
 
         return manifest;
       },
     }),
-    "/api/manifest",
   ),
   loggerContext,
 );

@@ -1,10 +1,10 @@
 import { createManifestHandler } from "@saleor/app-sdk/handlers/next";
 import { AppManifest } from "@saleor/app-sdk/types";
+import { withSpanAttributes } from "@saleor/apps-otel/src/with-span-attributes";
 
 import packageJson from "../../../package.json";
-import { withOtel } from "@saleor/apps-otel";
 
-export default withOtel(
+export default withSpanAttributes(
   createManifestHandler({
     async manifestFactory({ appBaseUrl }) {
       const iframeBaseUrl = process.env.APP_IFRAME_BASE_URL ?? appBaseUrl;
@@ -24,14 +24,14 @@ export default withOtel(
         extensions: [
           /**
            * Optionally, extend Dashboard with custom UIs
-           * https://docs.saleor.io/docs/3.x/developer/extending/apps/extending-dashboard-with-apps
+           * https://docs.saleor.io/developer/extending/apps/extending-dashboard-with-apps
            */
         ],
         homepageUrl: "https://github.com/saleor/apps",
         id: "saleor.app.smtp",
         name: "SMTP",
         permissions: ["MANAGE_ORDERS", "MANAGE_USERS", "MANAGE_GIFT_CARD"],
-        requiredSaleorVersion: ">=3.19 <4",
+        requiredSaleorVersion: ">=3.20 <4",
         supportUrl: "https://github.com/saleor/apps/discussions",
         tokenTargetUrl: `${apiBaseURL}/api/register`,
         version: packageJson.version,
@@ -40,5 +40,4 @@ export default withOtel(
       return manifest;
     },
   }),
-  "/api/manifest",
 );

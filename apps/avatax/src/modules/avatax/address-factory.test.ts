@@ -13,7 +13,7 @@ describe("avataxAddressFactory", () => {
         zip: "90002",
       });
 
-      expect(result).toEqual({
+      expect(result).toStrictEqual({
         line1: "123 Palm Grove Ln",
         city: "LOS ANGELES",
         region: "CA",
@@ -36,7 +36,7 @@ describe("avataxAddressFactory", () => {
         postalCode: "90002",
       });
 
-      expect(result).toEqual({
+      expect(result).toStrictEqual({
         line1: "123 Palm Grove Ln",
         line2: "",
         city: "LOS ANGELES",
@@ -58,7 +58,7 @@ describe("avataxAddressFactory", () => {
         postalCode: "90002",
       });
 
-      expect(result).toEqual({
+      expect(result).toStrictEqual({
         line1: "123 Palm",
         line2: "Grove Ln",
         city: "LOS ANGELES",
