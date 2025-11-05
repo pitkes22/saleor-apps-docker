@@ -2,11 +2,11 @@
 FROM node:22-alpine AS alpine
 
 # Base with pnpm and turbo
-FROM alpine AS base
+FROM alpine as base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
-RUN pnpm add turbo@2.4.4 --global
+RUN pnpm add turbo --global
 
 # Build pruning stage
 FROM base AS builder
@@ -15,10 +15,8 @@ WORKDIR /app
 # Copy entire monorepo
 COPY . .
 # Scope to a single app (passed via build arg)
-ARG APP_PATH
-RUN PKG_NAME=$(node -p "require('./apps/${APP_PATH}/package.json').name") \
-  && echo "Pruning for scope: ${PKG_NAME}" \
-  && pnpm dlx turbo@2.4.4 prune --scope="${PKG_NAME}" --docker
+ARG APP_NAME
+RUN turbo prune --scope=${APP_NAME} --docker
 
 # Install and build stage
 FROM base AS installer
@@ -41,10 +39,8 @@ ENV NODE_ENV=production
 ENV APL=file
 
 # Build specific app
-ARG APP_PATH
-RUN PKG_NAME=$(node -p "require('./apps/${APP_PATH}/package.json').name") \
-  && echo "Building scope: ${PKG_NAME}" \
-  && pnpm dlx turbo@2.4.4 run build --filter="${PKG_NAME}"
+ARG APP_NAME
+RUN turbo run build --filter=${APP_NAME}
 
 # Runtime image
 FROM alpine AS runner

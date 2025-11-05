@@ -26,10 +26,6 @@ jobs:
             app_path: avatax
           - app_name: saleor-app-cms
             app_path: cms
-          - app_name: saleor-app-cms-v2
-            app_path: cms-v2
-          - app_name: saleor-app-data-importer
-            app_path: data-importer
           - app_name: saleor-app-klaviyo
             app_path: klaviyo
           - app_name: saleor-app-payment-np-atobarai
@@ -87,6 +83,7 @@ jobs:
           # Add linux/arm64 when needed; emulation can slow builds
           platforms: linux/amd64
           build-args: |
+            APP_NAME=${{ matrix.app_name }}
             APP_PATH=${{ matrix.app_path }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
