@@ -22,27 +22,27 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - app_name: app-avatax
+          - app_name: saleor-app-avatax
             app_path: avatax
-          - app_name: cms
+          - app_name: saleor-app-cms
             app_path: cms
-          - app_name: cms-v2
+          - app_name: saleor-app-cms-v2
             app_path: cms-v2
-          - app_name: data-importer
+          - app_name: saleor-app-data-importer
             app_path: data-importer
-          - app_name: klaviyo
+          - app_name: saleor-app-klaviyo
             app_path: klaviyo
-          - app_name: np-atobarai
+          - app_name: saleor-app-payment-np-atobarai
             app_path: np-atobarai
-          - app_name: products-feed
+          - app_name: saleor-app-products-feed
             app_path: products-feed
-          - app_name: search
+          - app_name: saleor-app-search
             app_path: search
-          - app_name: segment
+          - app_name: saleor-app-segment
             app_path: segment
-          - app_name: smtp
+          - app_name: saleor-app-smtp
             app_path: smtp
-          - app_name: stripe
+          - app_name: saleor-app-payment-stripe
             app_path: stripe
 
     steps:
