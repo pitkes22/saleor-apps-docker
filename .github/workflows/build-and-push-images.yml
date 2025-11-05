@@ -87,7 +87,6 @@ jobs:
           # Add linux/arm64 when needed; emulation can slow builds
           platforms: linux/amd64
           build-args: |
-            APP_NAME=${{ matrix.app_name }}
             APP_PATH=${{ matrix.app_path }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
