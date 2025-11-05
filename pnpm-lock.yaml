@@ -307,7 +307,7 @@ importers:
         version: 1.77.3
       '@sentry/nextjs':
         specifier: 'catalog:'
-        version: 9.8.0(@opentelemetry/context-async-hooks@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/core@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/instrumentation@0.57.2(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.9.0))(next@15.2.4(@babel/core@7.26.10)(@opentelemetry/api@1.9.0)(@playwright/test@1.52.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react@18.2.0)(webpack@5.82.1)
+        version: 9.8.0(@opentelemetry/context-async-hooks@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/core@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/instrumentation@0.57.2(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.9.0))(next@15.2.4(@opentelemetry/api@1.9.0)(@playwright/test@1.52.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react@18.2.0)(webpack@5.82.1)
       '@t3-oss/env-nextjs':
         specifier: 'catalog:'
         version: 0.11.1(typescript@5.8.2)(zod@3.21.4)
@@ -316,7 +316,7 @@ importers:
         version: 10.43.1(@trpc/server@10.43.1)
       '@trpc/next':
         specifier: 'catalog:'
-        version: 10.43.1(@tanstack/react-query@4.29.19(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/client@10.43.1(@trpc/server@10.43.1))(@trpc/react-query@10.43.1(@tanstack/react-query@4.29.19(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/client@10.43.1(@trpc/server@10.43.1))(@trpc/server@10.43.1)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/server@10.43.1)(next@15.2.4(@babel/core@7.26.10)(@opentelemetry/api@1.9.0)(@playwright/test@1.52.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+        version: 10.43.1(@tanstack/react-query@4.29.19(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/client@10.43.1(@trpc/server@10.43.1))(@trpc/react-query@10.43.1(@tanstack/react-query@4.29.19(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/client@10.43.1(@trpc/server@10.43.1))(@trpc/server@10.43.1)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/server@10.43.1)(next@15.2.4(@opentelemetry/api@1.9.0)(@playwright/test@1.52.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@trpc/react-query':
         specifier: 'catalog:'
         version: 10.43.1(@tanstack/react-query@4.29.19(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/client@10.43.1(@trpc/server@10.43.1))(@trpc/server@10.43.1)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
@@ -548,7 +548,7 @@ importers:
         version: 1.77.3
       '@sentry/nextjs':
         specifier: 'catalog:'
-        version: 9.8.0(@opentelemetry/context-async-hooks@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/core@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/instrumentation@0.57.2(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.9.0))(next@15.2.4(@babel/core@7.26.10)(@opentelemetry/api@1.9.0)(@playwright/test@1.52.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react@18.2.0)(webpack@5.82.1)
+        version: 9.8.0(@opentelemetry/context-async-hooks@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/core@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/instrumentation@0.57.2(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.9.0))(next@15.2.4(@opentelemetry/api@1.9.0)(@playwright/test@1.52.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react@18.2.0)(webpack@5.82.1)
       '@tanstack/react-query':
         specifier: 'catalog:'
         version: 4.29.19(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
@@ -557,7 +557,7 @@ importers:
         version: 10.43.1(@trpc/server@10.43.1)
       '@trpc/next':
         specifier: 'catalog:'
-        version: 10.43.1(@tanstack/react-query@4.29.19(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/client@10.43.1(@trpc/server@10.43.1))(@trpc/react-query@10.43.1(@tanstack/react-query@4.29.19(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/client@10.43.1(@trpc/server@10.43.1))(@trpc/server@10.43.1)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/server@10.43.1)(next@15.2.4(@babel/core@7.26.10)(@opentelemetry/api@1.9.0)(@playwright/test@1.52.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+        version: 10.43.1(@tanstack/react-query@4.29.19(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/client@10.43.1(@trpc/server@10.43.1))(@trpc/react-query@10.43.1(@tanstack/react-query@4.29.19(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/client@10.43.1(@trpc/server@10.43.1))(@trpc/server@10.43.1)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/server@10.43.1)(next@15.2.4(@opentelemetry/api@1.9.0)(@playwright/test@1.52.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@trpc/react-query':
         specifier: 'catalog:'
         version: 10.43.1(@tanstack/react-query@4.29.19(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/client@10.43.1(@trpc/server@10.43.1))(@trpc/server@10.43.1)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
@@ -741,7 +741,7 @@ importers:
         version: 1.77.3
       '@sentry/nextjs':
         specifier: 'catalog:'
-        version: 9.8.0(@opentelemetry/context-async-hooks@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/core@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/instrumentation@0.57.2(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.9.0))(next@15.2.4(@babel/core@7.26.10)(@opentelemetry/api@1.9.0)(@playwright/test@1.52.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react@18.2.0)(webpack@5.82.1)
+        version: 9.8.0(@opentelemetry/context-async-hooks@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/core@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/instrumentation@0.57.2(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.9.0))(next@15.2.4(@opentelemetry/api@1.9.0)(@playwright/test@1.52.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react@18.2.0)(webpack@5.82.1)
       '@vercel/otel':
         specifier: 'catalog:'
         version: 1.10.1(@opentelemetry/api-logs@0.57.2)(@opentelemetry/api@1.9.0)(@opentelemetry/instrumentation@0.57.2(@opentelemetry/api@1.9.0))(@opentelemetry/resources@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-logs@0.57.2(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-metrics@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.9.0))
@@ -925,7 +925,7 @@ importers:
         version: 1.77.3
       '@sentry/nextjs':
         specifier: 'catalog:'
-        version: 9.8.0(@opentelemetry/context-async-hooks@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/core@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/instrumentation@0.57.2(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.9.0))(next@15.2.4(@babel/core@7.26.10)(@opentelemetry/api@1.9.0)(@playwright/test@1.52.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react@18.2.0)(webpack@5.82.1)
+        version: 9.8.0(@opentelemetry/context-async-hooks@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/core@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/instrumentation@0.57.2(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.9.0))(next@15.2.4(@opentelemetry/api@1.9.0)(@playwright/test@1.52.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react@18.2.0)(webpack@5.82.1)
       '@t3-oss/env-nextjs':
         specifier: 'catalog:'
         version: 0.11.1(typescript@5.8.2)(zod@3.21.4)
@@ -934,7 +934,7 @@ importers:
         version: 10.43.1(@trpc/server@10.43.1)
       '@trpc/next':
         specifier: 'catalog:'
-        version: 10.43.1(@tanstack/react-query@4.29.19(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/client@10.43.1(@trpc/server@10.43.1))(@trpc/react-query@10.43.1(@tanstack/react-query@4.29.19(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/client@10.43.1(@trpc/server@10.43.1))(@trpc/server@10.43.1)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/server@10.43.1)(next@15.2.4(@babel/core@7.26.10)(@opentelemetry/api@1.9.0)(@playwright/test@1.52.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+        version: 10.43.1(@tanstack/react-query@4.29.19(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/client@10.43.1(@trpc/server@10.43.1))(@trpc/react-query@10.43.1(@tanstack/react-query@4.29.19(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/client@10.43.1(@trpc/server@10.43.1))(@trpc/server@10.43.1)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/server@10.43.1)(next@15.2.4(@opentelemetry/api@1.9.0)(@playwright/test@1.52.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@trpc/react-query':
         specifier: 'catalog:'
         version: 10.43.1(@tanstack/react-query@4.29.19(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/client@10.43.1(@trpc/server@10.43.1))(@trpc/server@10.43.1)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
@@ -1145,7 +1145,7 @@ importers:
         version: link:../../packages/webhook-utils
       '@sentry/nextjs':
         specifier: 'catalog:'
-        version: 9.8.0(@opentelemetry/context-async-hooks@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/core@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/instrumentation@0.57.2(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.9.0))(next@15.2.4(@babel/core@7.26.10)(@opentelemetry/api@1.9.0)(@playwright/test@1.52.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react@18.2.0)(webpack@5.82.1)
+        version: 9.8.0(@opentelemetry/context-async-hooks@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/core@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/instrumentation@0.57.2(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.9.0))(next@15.2.4(@opentelemetry/api@1.9.0)(@playwright/test@1.52.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react@18.2.0)(webpack@5.82.1)
       '@tanstack/react-query':
         specifier: 'catalog:'
         version: 4.29.19(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
@@ -1154,7 +1154,7 @@ importers:
         version: 10.43.1(@trpc/server@10.43.1)
       '@trpc/next':
         specifier: 'catalog:'
-        version: 10.43.1(@tanstack/react-query@4.29.19(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/client@10.43.1(@trpc/server@10.43.1))(@trpc/react-query@10.43.1(@tanstack/react-query@4.29.19(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/client@10.43.1(@trpc/server@10.43.1))(@trpc/server@10.43.1)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/server@10.43.1)(next@15.2.4(@babel/core@7.26.10)(@opentelemetry/api@1.9.0)(@playwright/test@1.52.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+        version: 10.43.1(@tanstack/react-query@4.29.19(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/client@10.43.1(@trpc/server@10.43.1))(@trpc/react-query@10.43.1(@tanstack/react-query@4.29.19(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/client@10.43.1(@trpc/server@10.43.1))(@trpc/server@10.43.1)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/server@10.43.1)(next@15.2.4(@opentelemetry/api@1.9.0)(@playwright/test@1.52.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@trpc/react-query':
         specifier: 'catalog:'
         version: 10.43.1(@tanstack/react-query@4.29.19(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/client@10.43.1(@trpc/server@10.43.1))(@trpc/server@10.43.1)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
@@ -1353,7 +1353,7 @@ importers:
         version: 1.77.3
       '@sentry/nextjs':
         specifier: 'catalog:'
-        version: 9.8.0(@opentelemetry/context-async-hooks@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/core@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/instrumentation@0.57.2(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.9.0))(next@15.2.4(@babel/core@7.26.10)(@opentelemetry/api@1.9.0)(@playwright/test@1.52.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react@18.2.0)(webpack@5.82.1)
+        version: 9.8.0(@opentelemetry/context-async-hooks@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/core@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/instrumentation@0.57.2(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.9.0))(next@15.2.4(@opentelemetry/api@1.9.0)(@playwright/test@1.52.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react@18.2.0)(webpack@5.82.1)
       '@tanstack/react-query':
         specifier: 4.29.19
         version: 4.29.19(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
@@ -1362,7 +1362,7 @@ importers:
         version: 10.43.1(@trpc/server@10.43.1)
       '@trpc/next':
         specifier: 'catalog:'
-        version: 10.43.1(@tanstack/react-query@4.29.19(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/client@10.43.1(@trpc/server@10.43.1))(@trpc/react-query@10.43.1(@tanstack/react-query@4.29.19(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/client@10.43.1(@trpc/server@10.43.1))(@trpc/server@10.43.1)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/server@10.43.1)(next@15.2.4(@babel/core@7.26.10)(@opentelemetry/api@1.9.0)(@playwright/test@1.52.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+        version: 10.43.1(@tanstack/react-query@4.29.19(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/client@10.43.1(@trpc/server@10.43.1))(@trpc/react-query@10.43.1(@tanstack/react-query@4.29.19(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/client@10.43.1(@trpc/server@10.43.1))(@trpc/server@10.43.1)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/server@10.43.1)(next@15.2.4(@opentelemetry/api@1.9.0)(@playwright/test@1.52.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@trpc/react-query':
         specifier: 'catalog:'
         version: 10.43.1(@tanstack/react-query@4.29.19(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/client@10.43.1(@trpc/server@10.43.1))(@trpc/server@10.43.1)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
@@ -1555,7 +1555,7 @@ importers:
         version: 1.77.3
       '@sentry/nextjs':
         specifier: 'catalog:'
-        version: 9.8.0(@opentelemetry/context-async-hooks@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/core@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/instrumentation@0.57.2(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.9.0))(next@15.2.4(@babel/core@7.26.10)(@opentelemetry/api@1.9.0)(@playwright/test@1.52.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react@18.2.0)(webpack@5.82.1)
+        version: 9.8.0(@opentelemetry/context-async-hooks@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/core@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/instrumentation@0.57.2(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.9.0))(next@15.2.4(@opentelemetry/api@1.9.0)(@playwright/test@1.52.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react@18.2.0)(webpack@5.82.1)
       '@t3-oss/env-nextjs':
         specifier: 'catalog:'
         version: 0.11.1(typescript@5.8.2)(zod@3.21.4)
@@ -1564,7 +1564,7 @@ importers:
         version: 10.43.1(@trpc/server@10.43.1)
       '@trpc/next':
         specifier: 'catalog:'
-        version: 10.43.1(@tanstack/react-query@4.29.19(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/client@10.43.1(@trpc/server@10.43.1))(@trpc/react-query@10.43.1(@tanstack/react-query@4.29.19(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/client@10.43.1(@trpc/server@10.43.1))(@trpc/server@10.43.1)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/server@10.43.1)(next@15.2.4(@babel/core@7.26.10)(@opentelemetry/api@1.9.0)(@playwright/test@1.52.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+        version: 10.43.1(@tanstack/react-query@4.29.19(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/client@10.43.1(@trpc/server@10.43.1))(@trpc/react-query@10.43.1(@tanstack/react-query@4.29.19(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/client@10.43.1(@trpc/server@10.43.1))(@trpc/server@10.43.1)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/server@10.43.1)(next@15.2.4(@opentelemetry/api@1.9.0)(@playwright/test@1.52.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@trpc/react-query':
         specifier: 'catalog:'
         version: 10.43.1(@tanstack/react-query@4.29.19(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/client@10.43.1(@trpc/server@10.43.1))(@trpc/server@10.43.1)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
@@ -1769,7 +1769,7 @@ importers:
         version: 1.77.3
       '@sentry/nextjs':
         specifier: 'catalog:'
-        version: 9.8.0(@opentelemetry/context-async-hooks@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/core@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/instrumentation@0.57.2(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.9.0))(next@15.2.4(@babel/core@7.26.10)(@opentelemetry/api@1.9.0)(@playwright/test@1.52.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react@18.2.0)(webpack@5.82.1)
+        version: 9.8.0(@opentelemetry/context-async-hooks@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/core@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/instrumentation@0.57.2(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.9.0))(next@15.2.4(@opentelemetry/api@1.9.0)(@playwright/test@1.52.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react@18.2.0)(webpack@5.82.1)
       '@tanstack/react-query':
         specifier: 'catalog:'
         version: 4.29.19(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
@@ -1778,7 +1778,7 @@ importers:
         version: 10.43.1(@trpc/server@10.43.1)
       '@trpc/next':
         specifier: 'catalog:'
-        version: 10.43.1(@tanstack/react-query@4.29.19(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/client@10.43.1(@trpc/server@10.43.1))(@trpc/react-query@10.43.1(@tanstack/react-query@4.29.19(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/client@10.43.1(@trpc/server@10.43.1))(@trpc/server@10.43.1)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/server@10.43.1)(next@15.2.4(@babel/core@7.26.10)(@opentelemetry/api@1.9.0)(@playwright/test@1.52.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+        version: 10.43.1(@tanstack/react-query@4.29.19(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/client@10.43.1(@trpc/server@10.43.1))(@trpc/react-query@10.43.1(@tanstack/react-query@4.29.19(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/client@10.43.1(@trpc/server@10.43.1))(@trpc/server@10.43.1)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/server@10.43.1)(next@15.2.4(@opentelemetry/api@1.9.0)(@playwright/test@1.52.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@trpc/react-query':
         specifier: 'catalog:'
         version: 10.43.1(@tanstack/react-query@4.29.19(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/client@10.43.1(@trpc/server@10.43.1))(@trpc/server@10.43.1)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
@@ -1992,7 +1992,7 @@ importers:
         version: 1.77.3
       '@sentry/nextjs':
         specifier: 'catalog:'
-        version: 9.8.0(@opentelemetry/context-async-hooks@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/core@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/instrumentation@0.57.2(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.9.0))(next@15.2.4(@babel/core@7.26.10)(@opentelemetry/api@1.9.0)(@playwright/test@1.52.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react@18.2.0)(webpack@5.82.1)
+        version: 9.8.0(@opentelemetry/context-async-hooks@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/core@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/instrumentation@0.57.2(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.9.0))(next@15.2.4(@opentelemetry/api@1.9.0)(@playwright/test@1.52.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react@18.2.0)(webpack@5.82.1)
       '@t3-oss/env-nextjs':
         specifier: 'catalog:'
         version: 0.11.1(typescript@5.8.2)(zod@3.21.4)
@@ -2001,7 +2001,7 @@ importers:
         version: 10.43.1(@trpc/server@10.43.1)
       '@trpc/next':
         specifier: 'catalog:'
-        version: 10.43.1(@tanstack/react-query@4.29.19(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/client@10.43.1(@trpc/server@10.43.1))(@trpc/react-query@10.43.1(@tanstack/react-query@4.29.19(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/client@10.43.1(@trpc/server@10.43.1))(@trpc/server@10.43.1)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/server@10.43.1)(next@15.2.4(@babel/core@7.26.10)(@opentelemetry/api@1.9.0)(@playwright/test@1.52.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+        version: 10.43.1(@tanstack/react-query@4.29.19(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/client@10.43.1(@trpc/server@10.43.1))(@trpc/react-query@10.43.1(@tanstack/react-query@4.29.19(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/client@10.43.1(@trpc/server@10.43.1))(@trpc/server@10.43.1)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/server@10.43.1)(next@15.2.4(@opentelemetry/api@1.9.0)(@playwright/test@1.52.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@trpc/react-query':
         specifier: 'catalog:'
         version: 10.43.1(@tanstack/react-query@4.29.19(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/client@10.43.1(@trpc/server@10.43.1))(@trpc/server@10.43.1)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
@@ -2372,7 +2372,7 @@ importers:
         version: link:../typescript-config
       '@sentry/nextjs':
         specifier: 'catalog:'
-        version: 9.8.0(@opentelemetry/context-async-hooks@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/core@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/instrumentation@0.57.2(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.9.0))(next@15.2.4(@babel/core@7.26.10)(@opentelemetry/api@1.9.0)(@playwright/test@1.52.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react@18.2.0)(webpack@5.82.1)
+        version: 9.8.0(@opentelemetry/context-async-hooks@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/core@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/instrumentation@0.57.2(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.9.0))(next@15.2.4(@opentelemetry/api@1.9.0)(@playwright/test@1.52.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react@18.2.0)(webpack@5.82.1)
       '@vitest/coverage-v8':
         specifier: 'catalog:'
         version: 3.1.1(vitest@3.1.1(@types/node@22.13.10)(jiti@2.4.2)(jsdom@20.0.3)(msw@2.10.2(@types/node@22.13.10)(typescript@5.8.2))(terser@5.18.0)(tsx@4.19.3)(yaml@2.7.0))
@@ -2597,7 +2597,7 @@ importers:
         version: 10.43.1(@trpc/server@10.43.1)
       '@trpc/next':
         specifier: 'catalog:'
-        version: 10.43.1(@tanstack/react-query@4.29.19(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/client@10.43.1(@trpc/server@10.43.1))(@trpc/react-query@10.43.1(@tanstack/react-query@4.29.19(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/client@10.43.1(@trpc/server@10.43.1))(@trpc/server@10.43.1)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/server@10.43.1)(next@15.2.4(@babel/core@7.26.10)(@opentelemetry/api@1.9.0)(@playwright/test@1.52.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+        version: 10.43.1(@tanstack/react-query@4.29.19(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/client@10.43.1(@trpc/server@10.43.1))(@trpc/react-query@10.43.1(@tanstack/react-query@4.29.19(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/client@10.43.1(@trpc/server@10.43.1))(@trpc/server@10.43.1)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/server@10.43.1)(next@15.2.4(@opentelemetry/api@1.9.0)(@playwright/test@1.52.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@trpc/react-query':
         specifier: 'catalog:'
         version: 10.43.1(@tanstack/react-query@4.29.19(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/client@10.43.1(@trpc/server@10.43.1))(@trpc/server@10.43.1)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
@@ -3327,10 +3327,6 @@ packages:
     resolution: {integrity: sha512-OErEqsrxjZTJciZ4Oo+eoZqeW9UIiOcuYKRJA4ZAgV9myA+pOXhhmpfNCKjEH/auVfEYVFJ6y1Tc4r0eIApqiw==}
     engines: {node: '>=6.9.0'}
 
-  '@babel/helper-hoist-variables@7.22.5':
-    resolution: {integrity: sha512-wGjk9QZVzvknA6yKIUURb8zY3grXCcOZt+/7Wcy8O2uctxhplmUPkOdlgoNhmdVee2c92JXbf1xpMtVNbfoxRw==}
-    engines: {node: '>=6.9.0'}
-
   '@babel/helper-member-expression-to-functions@7.22.5':
     resolution: {integrity: sha512-aBiH1NKMG0H2cGZqspNvsaBe6wNGjbJjuLy29aU+eDZjSbbN53BaxlpB02xm9v34pLTZ1nIQPFYn2qMZoa5BQQ==}
     engines: {node: '>=6.9.0'}
@@ -3607,16 +3603,8 @@ packages:
     resolution: {integrity: sha512-2ncevenBqXI6qRMukPlXwHKHchC7RyMuu4xv5JBXRfOGVcTy1mXCD12qrp7Jsoxll1EV3+9sE4GugBVRjT2jFA==}
     engines: {node: '>=6.9.0'}
 
-  '@babel/traverse@7.23.9':
-    resolution: {integrity: sha512-I/4UJ9vs90OkBtY6iiiTORVMyIhJ4kAVmsKo9KFc8UOxMeUfi2hvtIBsET5u9GizXE6/GFSuKCTNfgCswuEjRg==}
-    engines: {node: '>=6.9.0'}
-
   '@babel/traverse@7.27.0':
     resolution: {integrity: sha512-19lYZFzYVQkkHkl4Cy4WrAVcqBkgvV2YM2TU3xG6DIwO7O3ecbDPfW3yM3bjAGcqcQHi+CCtjMR3dIEHxsd6bA==}
-    engines: {node: '>=6.9.0'}
-
-  '@babel/types@7.26.5':
-    resolution: {integrity: sha512-L6mZmwFDK6Cjh1nRCLXpa6no13ZIioJDz7mdkzHv399pThrTa/k0nUlNaenOeh2kWu/iaOQYElEpKPUswUa9Vg==}
     engines: {node: '>=6.9.0'}
 
   '@babel/types@7.27.0':
@@ -3987,8 +3975,8 @@ packages:
   '@emnapi/runtime@1.3.1':
     resolution: {integrity: sha512-kEBmG8KyqtxJZv+ygbEim+KCGtIq1fC22Ms3S4ziXmYKm8uyoLX0MHONVKwp+9opg390VaKRNt4a7A9NwmpNhw==}
 
-  '@emotion/hash@0.9.1':
-    resolution: {integrity: sha512-gJB6HLm5rYwSLI6PQa+X1t5CFGrv1J1TWG+sOyMCeKz2ojaj6Fnl/rZEspogG+cvqbt4AE/2eIyD2QfLKTBNlQ==}
+  '@emotion/hash@0.9.2':
+    resolution: {integrity: sha512-MyqliTZGuOm3+5ZRSaaBGP3USLw6+EGykkwZns2EPC5g8jJ4z9OrdZY9apkl3+UP9+sdz76YYkwCKP5gh8iY3g==}
 
   '@envelop/instrumentation@1.0.0':
     resolution: {integrity: sha512-cxgkB66RQB95H3X27jlnxCRNTmPuSTgmBAq6/4n2Dtv4hsk4yz8FadA1ggmd0uZzvKqWD6CR+WFgTjhDqg7eyw==}
@@ -6583,6 +6571,11 @@ packages:
     engines: {node: '>=0.4.0'}
     hasBin: true
 
+  acorn@8.15.0:
+    resolution: {integrity: sha512-NZyJarBfL7nWwIq+FDL6Zp/yHEhePMNnnJ0y3qfieCrmNvYct8uvtiV41UvlSe6apAfk0fY1FbWx+NwfmpvtTg==}
+    engines: {node: '>=0.4.0'}
+    hasBin: true
+
   agent-base@6.0.2:
     resolution: {integrity: sha512-RZNwNclF7+MS/8bDg70amg32dyeZGZxiDuQmZxKLAlQjr3jGyLx+4Kkk58UO7D2QdgFIQCovuSuZESne6RG6XQ==}
     engines: {node: '>= 6.0.0'}
@@ -9016,9 +9009,6 @@ packages:
 
   jose@5.10.0:
     resolution: {integrity: sha512-s+3Al/p9g32Iq+oqXxkW//7jk2Vig6FF1CFqzVXoTUXt2qz89YWbL+OwS17NFYEvxC35n0FKeGO2LGYSxeM2Gg==}
-
-  jose@5.2.2:
-    resolution: {integrity: sha512-/WByRr4jDcsKlvMd1dRJnPfS1GVO3WuKyaurJ/vvXcOaUQO8rnNObCQMlv/5uCceVQIq5Q4WLF44ohsdiTohdg==}
 
   jotai@2.4.2:
     resolution: {integrity: sha512-90jXVOd9h6gi5JXk558M+wnJfaaVN2WegcNOCfiFbWboNaDl6DkRgiY/K1oeqTfYJmq8yM7XPsL99LAvcOPqhw==}
@@ -13145,10 +13135,6 @@ snapshots:
       '@babel/template': 7.27.0
       '@babel/types': 7.27.0
 
-  '@babel/helper-hoist-variables@7.22.5':
-    dependencies:
-      '@babel/types': 7.27.0
-
   '@babel/helper-member-expression-to-functions@7.22.5':
     dependencies:
       '@babel/types': 7.27.0
@@ -13432,21 +13418,6 @@ snapshots:
       '@babel/parser': 7.27.0
       '@babel/types': 7.27.0
 
-  '@babel/traverse@7.23.9':
-    dependencies:
-      '@babel/code-frame': 7.26.2
-      '@babel/generator': 7.27.0
-      '@babel/helper-environment-visitor': 7.22.20
-      '@babel/helper-function-name': 7.23.0
-      '@babel/helper-hoist-variables': 7.22.5
-      '@babel/helper-split-export-declaration': 7.22.6
-      '@babel/parser': 7.27.0
-      '@babel/types': 7.27.0
-      debug: 4.4.0
-      globals: 11.12.0
-    transitivePeerDependencies:
-      - supports-color
-
   '@babel/traverse@7.27.0':
     dependencies:
       '@babel/code-frame': 7.26.2
@@ -13458,11 +13429,6 @@ snapshots:
       globals: 11.12.0
     transitivePeerDependencies:
       - supports-color
-
-  '@babel/types@7.26.5':
-    dependencies:
-      '@babel/helper-string-parser': 7.25.9
-      '@babel/helper-validator-identifier': 7.25.9
 
   '@babel/types@7.27.0':
     dependencies:
@@ -14020,7 +13986,7 @@ snapshots:
       tslib: 2.8.1
     optional: true
 
-  '@emotion/hash@0.9.1': {}
+  '@emotion/hash@0.9.2': {}
 
   '@envelop/instrumentation@1.0.0':
     dependencies:
@@ -14396,7 +14362,7 @@ snapshots:
 
   '@graphql-codegen/plugin-helpers@5.0.3(graphql@16.7.1)':
     dependencies:
-      '@graphql-tools/utils': 10.0.13(graphql@16.7.1)
+      '@graphql-tools/utils': 10.8.6(graphql@16.7.1)
       change-case-all: 1.0.15
       common-tags: 1.8.2
       graphql: 16.7.1
@@ -14554,10 +14520,10 @@ snapshots:
   '@graphql-tools/code-file-loader@8.1.1(graphql@16.11.0)':
     dependencies:
       '@graphql-tools/graphql-tag-pluck': 8.3.0(graphql@16.11.0)
-      '@graphql-tools/utils': 10.0.13(graphql@16.11.0)
+      '@graphql-tools/utils': 10.8.6(graphql@16.11.0)
       globby: 11.1.0
       graphql: 16.11.0
-      tslib: 2.6.2
+      tslib: 2.8.1
       unixify: 1.0.0
     transitivePeerDependencies:
       - supports-color
@@ -14565,10 +14531,10 @@ snapshots:
   '@graphql-tools/code-file-loader@8.1.1(graphql@16.7.1)':
     dependencies:
       '@graphql-tools/graphql-tag-pluck': 8.3.0(graphql@16.7.1)
-      '@graphql-tools/utils': 10.0.13(graphql@16.7.1)
+      '@graphql-tools/utils': 10.8.6(graphql@16.7.1)
       globby: 11.1.0
       graphql: 16.7.1
-      tslib: 2.6.2
+      tslib: 2.8.1
       unixify: 1.0.0
     transitivePeerDependencies:
       - supports-color
@@ -14723,7 +14689,7 @@ snapshots:
   '@graphql-tools/graphql-file-loader@8.0.0(graphql@16.11.0)':
     dependencies:
       '@graphql-tools/import': 7.0.0(graphql@16.11.0)
-      '@graphql-tools/utils': 10.0.13(graphql@16.11.0)
+      '@graphql-tools/utils': 10.8.6(graphql@16.11.0)
       globby: 11.1.0
       graphql: 16.11.0
       tslib: 2.8.1
@@ -14732,7 +14698,7 @@ snapshots:
   '@graphql-tools/graphql-file-loader@8.0.0(graphql@16.7.1)':
     dependencies:
       '@graphql-tools/import': 7.0.0(graphql@16.7.1)
-      '@graphql-tools/utils': 10.0.13(graphql@16.7.1)
+      '@graphql-tools/utils': 10.8.6(graphql@16.7.1)
       globby: 11.1.0
       graphql: 16.7.1
       tslib: 2.8.1
@@ -14743,9 +14709,9 @@ snapshots:
       '@babel/core': 7.26.10
       '@babel/parser': 7.26.5
       '@babel/plugin-syntax-import-assertions': 7.23.3(@babel/core@7.26.10)
-      '@babel/traverse': 7.23.9
-      '@babel/types': 7.26.5
-      '@graphql-tools/utils': 10.0.13(graphql@16.11.0)
+      '@babel/traverse': 7.27.0
+      '@babel/types': 7.27.0
+      '@graphql-tools/utils': 10.8.6(graphql@16.11.0)
       graphql: 16.11.0
       tslib: 2.8.1
     transitivePeerDependencies:
@@ -14756,9 +14722,9 @@ snapshots:
       '@babel/core': 7.26.10
       '@babel/parser': 7.26.5
       '@babel/plugin-syntax-import-assertions': 7.23.3(@babel/core@7.26.10)
-      '@babel/traverse': 7.23.9
-      '@babel/types': 7.26.5
-      '@graphql-tools/utils': 10.0.13(graphql@16.7.1)
+      '@babel/traverse': 7.27.0
+      '@babel/types': 7.27.0
+      '@graphql-tools/utils': 10.8.6(graphql@16.7.1)
       graphql: 16.7.1
       tslib: 2.8.1
     transitivePeerDependencies:
@@ -14792,21 +14758,21 @@ snapshots:
 
   '@graphql-tools/import@7.0.0(graphql@16.11.0)':
     dependencies:
-      '@graphql-tools/utils': 10.0.13(graphql@16.11.0)
+      '@graphql-tools/utils': 10.8.6(graphql@16.11.0)
       graphql: 16.11.0
       resolve-from: 5.0.0
       tslib: 2.8.1
 
   '@graphql-tools/import@7.0.0(graphql@16.7.1)':
     dependencies:
-      '@graphql-tools/utils': 10.0.13(graphql@16.7.1)
+      '@graphql-tools/utils': 10.8.6(graphql@16.7.1)
       graphql: 16.7.1
       resolve-from: 5.0.0
       tslib: 2.8.1
 
   '@graphql-tools/json-file-loader@8.0.0(graphql@16.11.0)':
     dependencies:
-      '@graphql-tools/utils': 10.0.13(graphql@16.11.0)
+      '@graphql-tools/utils': 10.8.6(graphql@16.11.0)
       globby: 11.1.0
       graphql: 16.11.0
       tslib: 2.8.1
@@ -14814,7 +14780,7 @@ snapshots:
 
   '@graphql-tools/json-file-loader@8.0.0(graphql@16.7.1)':
     dependencies:
-      '@graphql-tools/utils': 10.0.13(graphql@16.7.1)
+      '@graphql-tools/utils': 10.8.6(graphql@16.7.1)
       globby: 11.1.0
       graphql: 16.7.1
       tslib: 2.8.1
@@ -16269,7 +16235,7 @@ snapshots:
       '@segment/analytics-core': 1.8.0
       '@segment/analytics-generic-utils': 1.2.0
       buffer: 6.0.3
-      jose: 5.2.2
+      jose: 5.10.0
       node-fetch: 2.7.0
       tslib: 2.6.2
     transitivePeerDependencies:
@@ -16376,7 +16342,7 @@ snapshots:
 
   '@sentry/core@9.8.0': {}
 
-  '@sentry/nextjs@9.8.0(@opentelemetry/context-async-hooks@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/core@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/instrumentation@0.57.2(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.9.0))(next@15.2.4(@babel/core@7.26.10)(@opentelemetry/api@1.9.0)(@playwright/test@1.52.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react@18.2.0)(webpack@5.82.1)':
+  '@sentry/nextjs@9.8.0(@opentelemetry/context-async-hooks@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/core@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/instrumentation@0.57.2(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.9.0))(next@15.2.4(@opentelemetry/api@1.9.0)(@playwright/test@1.52.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react@18.2.0)(webpack@5.82.1)':
     dependencies:
       '@opentelemetry/api': 1.9.0
       '@opentelemetry/semantic-conventions': 1.30.0
@@ -16856,7 +16822,7 @@ snapshots:
     dependencies:
       '@trpc/server': 10.43.1
 
-  '@trpc/next@10.43.1(@tanstack/react-query@4.29.19(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/client@10.43.1(@trpc/server@10.43.1))(@trpc/react-query@10.43.1(@tanstack/react-query@4.29.19(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/client@10.43.1(@trpc/server@10.43.1))(@trpc/server@10.43.1)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/server@10.43.1)(next@15.2.4(@babel/core@7.26.10)(@opentelemetry/api@1.9.0)(@playwright/test@1.52.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
+  '@trpc/next@10.43.1(@tanstack/react-query@4.29.19(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/client@10.43.1(@trpc/server@10.43.1))(@trpc/react-query@10.43.1(@tanstack/react-query@4.29.19(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/client@10.43.1(@trpc/server@10.43.1))(@trpc/server@10.43.1)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@trpc/server@10.43.1)(next@15.2.4(@opentelemetry/api@1.9.0)(@playwright/test@1.52.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
     dependencies:
       '@tanstack/react-query': 4.29.19(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@trpc/client': 10.43.1(@trpc/server@10.43.1)
@@ -17171,7 +17137,7 @@ snapshots:
 
   '@vanilla-extract/css@1.14.2':
     dependencies:
-      '@emotion/hash': 0.9.1
+      '@emotion/hash': 0.9.2
       '@vanilla-extract/private': 1.0.4
       chalk: 4.1.2
       css-what: 6.1.0
@@ -17450,9 +17416,9 @@ snapshots:
       acorn: 8.14.1
       acorn-walk: 8.3.2
 
-  acorn-import-assertions@1.9.0(acorn@8.14.1):
+  acorn-import-assertions@1.9.0(acorn@8.15.0):
     dependencies:
-      acorn: 8.14.1
+      acorn: 8.15.0
 
   acorn-import-attributes@1.9.5(acorn@8.14.1):
     dependencies:
@@ -17465,6 +17431,8 @@ snapshots:
   acorn-walk@8.3.2: {}
 
   acorn@8.14.1: {}
+
+  acorn@8.15.0: {}
 
   agent-base@6.0.2:
     dependencies:
@@ -19655,7 +19623,7 @@ snapshots:
     dependencies:
       array-union: 2.1.0
       dir-glob: 3.0.1
-      fast-glob: 3.3.2
+      fast-glob: 3.3.3
       ignore: 5.3.2
       merge2: 1.4.1
       slash: 3.0.0
@@ -20356,8 +20324,6 @@ snapshots:
   jiti@2.4.2: {}
 
   jose@5.10.0: {}
-
-  jose@5.2.2: {}
 
   jotai@2.4.2(@types/react@18.2.5)(react@18.2.0):
     optionalDependencies:
@@ -22749,7 +22715,7 @@ snapshots:
   terser@5.18.0:
     dependencies:
       '@jridgewell/source-map': 0.3.3
-      acorn: 8.14.1
+      acorn: 8.15.0
       commander: 2.20.3
       source-map-support: 0.5.21
 
@@ -23310,8 +23276,8 @@ snapshots:
       '@webassemblyjs/ast': 1.11.6
       '@webassemblyjs/wasm-edit': 1.11.6
       '@webassemblyjs/wasm-parser': 1.11.6
-      acorn: 8.14.1
-      acorn-import-assertions: 1.9.0(acorn@8.14.1)
+      acorn: 8.15.0
+      acorn-import-assertions: 1.9.0(acorn@8.15.0)
       browserslist: 4.24.4
       chrome-trace-event: 1.0.3
       enhanced-resolve: 5.18.1

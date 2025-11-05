@@ -18,6 +18,7 @@ const nextConfig = (): NextConfig => {
   }
 
   return {
+    output: "standalone",
     reactStrictMode: true,
     transpilePackages: [
       "@saleor/apps-otel",
